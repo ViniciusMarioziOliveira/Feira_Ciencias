@@ -1,0 +1,10 @@
+Coloque aqui as fotos usadas na landing page, com estes nomes:
+
+  grupo.jpg     -> foto do grupo, no topo da página (de preferência horizontal, 4:3)
+  emannoel.jpg  -> foto de Emannoel, seção Brawl SENAI (de preferência vertical, 4:5)
+  john.jpg      -> foto de John, seção TRON (de preferência vertical, 4:5)
+
+Enquanto uma foto não existir, a página mostra as iniciais no lugar dela.
+
+Dica: fotos muito grandes deixam a página lenta. Uns 1600 px de largura
+para a foto do grupo e 900 px para as individuais já ficam ótimos.

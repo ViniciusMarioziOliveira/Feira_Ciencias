@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Feira de Ciências · SENAI</title>
+  <meta name="description" content="Brawl SENAI, TRON e Rocket SENAI: os projetos do nosso grupo na Feira de Ciências do SENAI.">
+  <meta name="theme-color" content="#07070b">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2307070b'/%3E%3Cg stroke-width='7' stroke-linecap='round'%3E%3Cpath d='M12 50 22 14' stroke='%23ffd21f'/%3E%3Cpath d='M27 50 37 14' stroke='%232ae8ff'/%3E%3Cpath d='M42 50 52 14' stroke='%23ff4538'/%3E%3C/g%3E%3C/svg%3E">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Orbitron:wght@500;700;900&family=Saira:ital,wght@1,700;1,900&family=Unbounded:wght@500;800;900&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+
+  <script>document.documentElement.classList.add('js')</script>
+  <script src="js/main.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#brawl">Pular para os projetos</a>
+  <div class="progress" aria-hidden="true"></div>
+  <div class="top-sentinel" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <a class="brand" href="#inicio" aria-label="Início">
+      <span class="brand-mark" aria-hidden="true">//</span>
+      <span class="brand-text">Feira de Ciências <b>SENAI</b></span>
+    </a>
+    <nav class="nav" aria-label="Projetos">
+      <a href="#brawl">Brawl<span class="long"> SENAI</span></a>
+      <a href="#tron">TRON</a>
+      <a href="#rocket">Rocket<span class="long"> SENAI</span></a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- ================= INÍCIO: foto do grupo + integrantes ================= -->
+    <section class="hero" id="inicio" aria-labelledby="hero-title" data-live>
+      <div class="hero-glow" aria-hidden="true"></div>
+
+      <div class="hero-inner">
+        <!-- Foto do grupo: salve como img/grupo.jpg (horizontal, 4:3). Sem a foto, aparecem as iniciais. -->
+        <figure class="group-photo" data-tilt data-reveal>
+          <div class="frame">
+            <img src="img/grupo.jpg" alt="Foto do grupo" width="1600" height="1200" onerror="this.closest('figure').classList.add('is-missing')">
+            <div class="photo-fallback" aria-hidden="true">
+              <span>ES</span><span>JS</span><span>JC</span><span>LF</span><span>PV</span><span>VO</span><span>YC</span>
+            </div>
+          </div>
+          <figcaption>// nosso grupo</figcaption>
+        </figure>
+
+        <div class="hero-copy">
+          <p class="eyebrow" data-reveal>Feira de Ciências · SENAI</p>
+          <h1 id="hero-title" data-reveal style="--d: 80ms">Três projetos.<br><span class="grad">Um só grupo.</span></h1>
+          <p class="lead" data-reveal style="--d: 160ms">Jogue, explore e conheça quem fez.</p>
+
+          <h2 class="members-title" data-reveal style="--d: 220ms">Integrantes</h2>
+          <ul class="members">
+            <li data-reveal style="--d: 260ms"><b>Emannoel</b> Henrique Soares</li>
+            <li data-reveal style="--d: 300ms"><b>Julio</b> Aurelio Souza</li>
+            <li data-reveal style="--d: 340ms"><b>John</b> Cristopher</li>
+            <li data-reveal style="--d: 380ms"><b>Luiz</b> Felipe</li>
+            <li data-reveal style="--d: 420ms"><b>Pedro</b> Henrique Vasconcelos</li>
+            <li data-reveal style="--d: 460ms"><b>Vinícius</b> Mariozi Oliveira</li>
+            <li data-reveal style="--d: 500ms"><b>Yan</b> Matheus Proença Camargo</li>
+          </ul>
+        </div>
+      </div>
+
+      <a class="scroll-cue" href="#brawl">Role para ver os projetos</a>
+    </section>
+
+    <div class="divider" aria-hidden="true"><span>//</span></div>
+
+    <!-- ================= PROJETO 01: BRAWL SENAI ================= -->
+    <section class="project brawl" id="brawl" aria-labelledby="brawl-title" data-live>
+      <div class="brawl-rays" aria-hidden="true"></div>
+
+      <div class="project-inner">
+        <!-- Foto: img/emannoel.jpg (vertical, 4:5) -->
+        <figure class="player" data-tilt data-reveal>
+          <div class="frame">
+            <img src="img/emannoel.jpg" alt="Foto de Emannoel Henrique Soares" width="800" height="1000" loading="lazy" onerror="this.closest('figure').classList.add('is-missing')">
+            <div class="photo-fallback" aria-hidden="true"><span>ES</span></div>
+          </div>
+          <figcaption>Emannoel Henrique Soares</figcaption>
+        </figure>
+
+        <div class="project-copy">
+          <p class="project-index" data-reveal>Projeto 01</p>
+          <h2 class="brawl-title" id="brawl-title" data-reveal="pop">Brawl <span class="badge">SENAI</span></h2>
+          <p class="callout" data-reveal style="--d: 200ms">
+            <svg class="arrow" viewBox="0 0 140 70" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path class="arrow-line" pathLength="1" d="M130 52C104 64 64 60 18 30"/>
+              <path class="arrow-head" pathLength="1" d="M25 47 18 30 36 29"/>
+            </svg>
+            <span>Quer jogar? <strong>Procure esse mano!</strong></span>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider" aria-hidden="true"><span>//</span></div>
+
+    <!-- ================= PROJETO 02: TRON ================= -->
+    <section class="project tron" id="tron" aria-labelledby="tron-title" data-live>
+      <div class="tron-floor" aria-hidden="true"></div>
+
+      <div class="project-inner">
+        <div class="project-copy">
+          <p class="project-index" data-reveal>Projeto 02</p>
+          <h2 class="tron-title" id="tron-title" data-reveal="neon">TRON</h2>
+          <p class="callout" data-reveal style="--d: 200ms">
+            <span>Quer jogar? <strong>Procure esse outro mano!</strong></span>
+            <svg class="arrow" viewBox="0 0 140 70" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path class="arrow-line" pathLength="1" d="M10 52C36 64 76 60 122 30"/>
+              <path class="arrow-head" pathLength="1" d="M115 47 122 30 104 29"/>
+            </svg>
+          </p>
+        </div>
+
+        <!-- Foto: img/john.jpg (vertical, 4:5) -->
+        <figure class="player" data-tilt data-reveal>
+          <div class="frame">
+            <img src="img/john.jpg" alt="Foto de John Cristopher" width="800" height="1000" loading="lazy" onerror="this.closest('figure').classList.add('is-missing')">
+            <div class="photo-fallback" aria-hidden="true"><span>JC</span></div>
+          </div>
+          <figcaption>John Cristopher</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ================= PROJETO 03: ROCKET SENAI (modelo 3D) ================= -->
+    <section class="rocket" id="rocket" aria-labelledby="rocket-title" data-live>
+      <div class="rocket-head">
+        <div>
+          <p class="project-index" data-reveal>Projeto 03</p>
+          <h2 class="rocket-title" id="rocket-title" data-reveal>Rocket <span class="badge">SENAI</span></h2>
+        </div>
+        <p class="rocket-sub" data-reveal style="--d: 120ms">Modelo 3D imersivo do carrinho <strong>Ferrari SF-25</strong>.</p>
+      </div>
+
+      <!-- O iframe do Sketchfab só é criado pelo js/main.js quando alguém clica em "Ligar o motor" -->
+      <div class="garage" data-model="7929bd7771d8494eaf0eb31404e24bf6" data-state="idle">
+        <p class="garage-bigtext" aria-hidden="true">SF-25</p>
+        <div class="garage-stage">
+          <noscript>
+            <iframe title="F1 2025 Ferrari SF-25" src="https://sketchfab.com/models/7929bd7771d8494eaf0eb31404e24bf6/embed?ui_theme=dark&amp;dnt=1" allow="autoplay; fullscreen; xr-spatial-tracking" allowfullscreen></iframe>
+          </noscript>
+        </div>
+        <div class="garage-poster">
+          <div class="lights" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+          <button class="ignition" type="button" data-action="start">Ligar<br>o motor</button>
+          <p class="garage-status" role="status" aria-live="polite">Clique para carregar o modelo 3D</p>
+        </div>
+      </div>
+
+      <div class="garage-bar">
+        <p class="garage-hint">Arraste para girar · Role para dar zoom · Clique duplo para focar</p>
+        <button class="garage-off" type="button" data-action="stop" hidden>Desligar 3D</button>
+      </div>
+
+      <p class="credit">
+        Modelo 3D:
+        <a href="https://sketchfab.com/3d-models/f1-2025-ferrari-sf-25-7929bd7771d8494eaf0eb31404e24bf6" target="_blank" rel="nofollow noopener">F1 2025 Ferrari SF-25</a>
+        por <a href="https://sketchfab.com/excalibur" target="_blank" rel="nofollow noopener">Excalibur</a>
+        no <a href="https://sketchfab.com" target="_blank" rel="nofollow noopener">Sketchfab</a>
+      </p>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>Feira de Ciências · SENAI · 2026</p>
+    <a href="#inicio">Voltar ao topo ↑</a>
+  </footer>
+</body>
+</html>

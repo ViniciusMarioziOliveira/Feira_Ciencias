@@ -1,0 +1,981 @@
+/* =========================================================
+   Feira de Ciências · SENAI — landing page
+   Tema escuro com uma identidade visual por projeto.
+   Pensado para não pesar na placa de vídeo:
+   - animações só com transform/opacity (o navegador resolve na GPU sem redesenhar a página);
+   - animações contínuas pausam quando a seção sai da tela (classe .is-visible, via JS);
+   - sem backdrop-filter nem blur em áreas grandes.
+   ========================================================= */
+
+:root {
+  color-scheme: dark;
+
+  --bg: #07070b;
+  --ink: #f4f4f7;
+  --ink-2: #b9b9c8;
+  --muted: #80809a;
+  --line: rgba(255, 255, 255, 0.12);
+
+  --brawl: #ffd21f;
+  --brawl-pink: #ff4f9a;
+  --brawl-ink: #170830;
+
+  --tron: #2ae8ff;
+  --tron-glow: rgba(42, 232, 255, 0.55);
+
+  --rocket: #e8150b;
+  --rocket-text: #ff4538;
+  --rocket-glow: rgba(232, 21, 11, 0.45);
+
+  --font-display: "Unbounded", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-brawl: "Lilita One", "Arial Black", Impact, sans-serif;
+  --font-tron: "Orbitron", "Segoe UI", sans-serif;
+  --font-rocket: "Saira", "Arial Narrow", "Segoe UI", sans-serif;
+
+  --pad: clamp(16px, 4vw, 48px);
+  --maxw: 1180px;
+  --topbar-h: 64px;
+  --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --ease-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ---------- Base ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: var(--topbar-h);
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 400 16px/1.55 var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+img { display: block; max-width: 100%; }
+a { color: inherit; }
+button { font: inherit; color: inherit; }
+h1, h2, p, figure { margin: 0; }
+
+:focus-visible {
+  outline: 3px solid var(--tron);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+.skip {
+  position: absolute;
+  left: 12px;
+  top: -60px;
+  z-index: 100;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: var(--ink);
+  color: var(--bg);
+  font-weight: 700;
+  text-decoration: none;
+}
+.skip:focus { top: 12px; }
+
+/* Barra de progresso da rolagem (só CSS; some em navegadores sem suporte) */
+.progress {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 60;
+  height: 3px;
+  background: linear-gradient(90deg, var(--brawl), var(--tron), var(--rocket));
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+  pointer-events: none;
+}
+@supports (animation-timeline: scroll()) {
+  .progress {
+    animation: progress linear both;
+    animation-timeline: scroll(root);
+  }
+}
+@supports not (animation-timeline: scroll()) {
+  .progress { display: none; }
+}
+@keyframes progress { to { transform: scaleX(1); } }
+
+.top-sentinel {
+  position: absolute;
+  top: 0;
+  height: 40px;
+  width: 1px;
+}
+
+/* ---------- Barra do topo ---------- */
+.topbar {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 50;
+  height: var(--topbar-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0 var(--pad);
+  border-bottom: 1px solid transparent;
+  transition: background-color 0.3s, border-color 0.3s;
+}
+.topbar.is-solid {
+  background: rgba(7, 7, 11, 0.92);
+  border-bottom-color: var(--line);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  font: 800 13px/1 var(--font-display);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+.brand-mark {
+  font: 900 18px/1 var(--font-tron);
+  background: linear-gradient(90deg, var(--brawl), var(--tron), var(--rocket-text));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.brand b { font-weight: 500; color: var(--ink-2); }
+
+.nav { display: flex; gap: 6px; }
+.nav a {
+  --c: var(--ink);
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink-2);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 0.2s, border-color 0.2s, background-color 0.2s;
+}
+.nav a[href="#brawl"] { --c: var(--brawl); }
+.nav a[href="#tron"] { --c: var(--tron); }
+.nav a[href="#rocket"] { --c: var(--rocket-text); }
+.nav a:hover,
+.nav a[aria-current] {
+  color: var(--c);
+  border-color: var(--c);
+  background: color-mix(in srgb, var(--c) 12%, transparent);
+}
+
+/* ---------- Revelar ao rolar ---------- */
+.js [data-reveal] {
+  opacity: 0;
+  translate: 0 28px;
+  transition: opacity 0.8s var(--ease-out), translate 0.8s var(--ease-out);
+  transition-delay: var(--d, 0ms);
+}
+.js [data-reveal].is-in {
+  opacity: 1;
+  translate: none;
+}
+.js [data-reveal="pop"] {
+  translate: none;
+  scale: 0.6;
+  transition: opacity 0.4s ease, scale 0.7s var(--ease-pop);
+  transition-delay: var(--d, 0ms);
+}
+.js [data-reveal="pop"].is-in { scale: 1; }
+.js [data-reveal="neon"] {
+  translate: none;
+  transition: none;
+}
+.js [data-reveal="neon"].is-in { animation: neon-on 1.4s linear both; }
+
+@keyframes neon-on {
+  0% { opacity: 0; }
+  8% { opacity: 1; }
+  12% { opacity: 0.2; }
+  20% { opacity: 1; }
+  26% { opacity: 0.35; }
+  34%, 100% { opacity: 1; }
+}
+
+/* Inclinação 3D das fotos (o JS atualiza --rx/--ry conforme o mouse) */
+[data-tilt] .frame {
+  transform: perspective(1000px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition: transform 0.35s var(--ease-out);
+}
+
+/* Fotos que ainda não existem: mostra iniciais no lugar */
+.frame { position: relative; overflow: hidden; }
+.frame img { width: 100%; height: 100%; object-fit: cover; }
+.photo-fallback { display: none; }
+.is-missing img { display: none; }
+.is-missing .photo-fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  justify-content: center;
+  gap: clamp(8px, 1.4vw, 14px);
+  padding: 8%;
+}
+.photo-fallback span {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  font-family: var(--font-display);
+  font-weight: 800;
+}
+
+/* =========================================================
+   INÍCIO
+   ========================================================= */
+.hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  overflow: clip;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: grid;
+  align-items: center;
+  padding: calc(var(--topbar-h) + 40px) var(--pad) 120px;
+}
+.hero-glow {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(38% 46% at 10% 30%, rgba(255, 210, 31, 0.13), transparent 70%),
+    radial-gradient(34% 42% at 90% 20%, rgba(42, 232, 255, 0.12), transparent 70%),
+    radial-gradient(50% 45% at 60% 100%, rgba(232, 21, 11, 0.2), transparent 70%);
+}
+.hero-inner {
+  width: 100%;
+  max-width: var(--maxw);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(32px, 6vw, 88px);
+  align-items: center;
+}
+
+.group-photo {
+  position: relative;
+  rotate: -2deg;
+}
+.group-photo .frame {
+  aspect-ratio: 4 / 3;
+  border: 3px solid transparent;
+  border-radius: 22px;
+  background:
+    linear-gradient(#12121a, #12121a) padding-box,
+    linear-gradient(135deg, var(--brawl), var(--tron) 50%, var(--rocket)) border-box;
+  box-shadow: 0 40px 90px -40px #000;
+}
+.group-photo .frame img { border-radius: 19px; }
+.group-photo figcaption {
+  position: absolute;
+  left: 22px;
+  bottom: -14px;
+  padding: 8px 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--ink-2);
+  font: 700 11px/1 var(--font-tron);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+.group-photo .photo-fallback {
+  border-radius: 19px;
+  background: radial-gradient(70% 70% at 50% 40%, #1d1d2b, #0e0e15);
+}
+.group-photo .photo-fallback span {
+  width: clamp(52px, 7vw, 84px);
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.04);
+  font-size: clamp(14px, 1.7vw, 21px);
+}
+.group-photo .photo-fallback span:nth-child(3n + 1) { color: var(--brawl); border-color: rgba(255, 210, 31, 0.45); }
+.group-photo .photo-fallback span:nth-child(3n + 2) { color: var(--tron); border-color: rgba(42, 232, 255, 0.45); }
+.group-photo .photo-fallback span:nth-child(3n) { color: var(--rocket-text); border-color: rgba(255, 69, 56, 0.45); }
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--ink-2);
+  font: 700 12px/1 var(--font-tron);
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+}
+.eyebrow::before {
+  content: "";
+  width: 30px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--brawl), var(--tron), var(--rocket));
+}
+.hero h1 {
+  margin: 20px 0 14px;
+  font: 900 clamp(30px, 3.7vw, 50px)/1.05 var(--font-display);
+  letter-spacing: -0.02em;
+}
+.hero h1 .grad {
+  background: linear-gradient(90deg, var(--brawl) 18%, var(--tron) 45% 60%, var(--rocket-text) 85%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.lead {
+  max-width: 34ch;
+  color: var(--ink-2);
+  font-size: clamp(16px, 1.5vw, 19px);
+}
+
+.members-title {
+  margin: 34px 0 4px;
+  color: var(--muted);
+  font: 700 12px/1 var(--font-tron);
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+}
+.members {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: member;
+}
+.members li {
+  counter-increment: member;
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+  color: var(--ink-2);
+  font-size: clamp(15px, 1.35vw, 18px);
+}
+.members li::before {
+  content: counter(member, decimal-leading-zero);
+  min-width: 2.2ch;
+  color: var(--muted);
+  font: 700 11px/1 var(--font-tron);
+  letter-spacing: 0.08em;
+}
+.members b { color: var(--ink); font-weight: 700; }
+
+.scroll-cue {
+  position: absolute;
+  left: 50%;
+  bottom: 28px;
+  translate: -50% 0;
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  color: var(--muted);
+  font: 700 10px/1 var(--font-tron);
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.scroll-cue::after {
+  content: "";
+  width: 12px;
+  height: 12px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  rotate: 45deg;
+  animation: cue 1.6s ease-in-out infinite paused;
+}
+.hero.is-visible .scroll-cue::after { animation-play-state: running; }
+@keyframes cue { 50% { translate: 0 6px; } }
+
+/* ---------- Divisória "//" do rascunho ---------- */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 24px var(--pad);
+  color: var(--muted);
+  font: 900 18px/1 var(--font-tron);
+}
+.divider::before,
+.divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--line) 25%, var(--line) 75%, transparent);
+}
+
+/* =========================================================
+   PROJETOS (estrutura comum)
+   ========================================================= */
+.project {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  overflow: clip;
+  padding: clamp(84px, 11vw, 150px) var(--pad);
+}
+.project-inner {
+  position: relative;
+  max-width: var(--maxw);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  gap: clamp(40px, 7vw, 110px);
+  align-items: center;
+}
+.tron .project-inner { grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); }
+
+.project-index {
+  color: var(--ink-2);
+  font: 700 12px/1 var(--font-tron);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+}
+.project-index::before { content: "// "; color: var(--muted); }
+
+.player {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  justify-self: center;
+}
+.player .frame { aspect-ratio: 4 / 5; }
+.player .photo-fallback span {
+  width: 56%;
+  font-size: clamp(48px, 7vw, 92px);
+}
+
+.callout {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-top: 34px;
+  font-size: clamp(18px, 2vw, 25px);
+  line-height: 1.25;
+}
+.callout strong { display: block; }
+.arrow {
+  flex: none;
+  width: clamp(84px, 9vw, 128px);
+  height: auto;
+  overflow: visible;
+}
+.arrow path { stroke-dasharray: 1; }
+.js .arrow path {
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 0.8s var(--ease-out) 0.5s;
+}
+.js .arrow .arrow-head { transition-duration: 0.25s; transition-delay: 1.25s; }
+.js .callout.is-in .arrow path { stroke-dashoffset: 0; }
+
+/* =========================================================
+   PROJETO 01 · BRAWL SENAI — cartoon, amarelo e roxo
+   ========================================================= */
+.brawl {
+  background:
+    radial-gradient(rgba(255, 255, 255, 0.07) 1.2px, transparent 1.8px) 0 0 / 18px 18px,
+    linear-gradient(to bottom, var(--bg), transparent 14%, transparent 86%, var(--bg)),
+    radial-gradient(90% 80% at 25% 45%, #3d1376 0%, #1d0a3c 55%, #0d0520 100%);
+}
+.brawl-rays {
+  position: absolute;
+  left: 28%;
+  top: 50%;
+  z-index: -1;
+  width: 130vmax;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: repeating-conic-gradient(rgba(255, 210, 31, 0.09) 0deg 8deg, transparent 8deg 16deg);
+  -webkit-mask-image: radial-gradient(closest-side, #000 20%, transparent 70%);
+  mask-image: radial-gradient(closest-side, #000 20%, transparent 70%);
+}
+
+.brawl .player { rotate: -3deg; }
+.brawl .frame {
+  border: 6px solid var(--brawl-ink);
+  border-radius: 28px;
+  background: var(--brawl);
+  box-shadow: 14px 14px 0 var(--brawl);
+}
+.brawl figcaption {
+  position: absolute;
+  left: 50%;
+  bottom: -20px;
+  translate: -50% 0;
+  rotate: 2deg;
+  padding: 10px 18px 8px;
+  border: 4px solid var(--brawl-ink);
+  border-radius: 14px;
+  background: var(--brawl-pink);
+  color: #fff;
+  font: 400 clamp(16px, 1.6vw, 20px)/1 var(--font-brawl);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+.brawl .photo-fallback {
+  background: repeating-linear-gradient(-45deg, #ffd21f 0 18px, #ffc400 18px 36px);
+}
+.brawl .photo-fallback span {
+  background: var(--brawl-ink);
+  color: var(--brawl);
+}
+
+.brawl-title {
+  margin-top: 18px;
+  color: var(--brawl);
+  font: 400 clamp(64px, 10vw, 148px)/0.88 var(--font-brawl);
+  text-transform: uppercase;
+  -webkit-text-stroke: 9px var(--brawl-ink);
+  paint-order: stroke fill;
+  text-shadow: 0 10px 0 var(--brawl-ink);
+  rotate: -4deg;
+  transform-origin: left center;
+}
+.brawl-title .badge {
+  display: inline-block;
+  padding: 0.2em 0.45em 0.12em;
+  border: 5px solid var(--brawl-ink);
+  border-radius: 16px;
+  background: var(--brawl-pink);
+  color: #fff;
+  font-size: 0.36em;
+  letter-spacing: 0.06em;
+  vertical-align: middle;
+  -webkit-text-stroke: 0;
+  text-shadow: none;
+  box-shadow: 0 6px 0 var(--brawl-ink);
+  rotate: 6deg;
+  translate: 0 -0.25em;
+}
+
+.brawl .callout { color: var(--brawl); }
+.brawl .callout span {
+  padding: 16px 22px;
+  border: 4px solid var(--brawl-ink);
+  border-radius: 20px;
+  background: #fff;
+  color: var(--brawl-ink);
+  font-family: var(--font-brawl);
+  letter-spacing: 0.01em;
+  box-shadow: 7px 7px 0 var(--brawl-ink);
+}
+.brawl .callout strong { color: #d81b72; font-weight: 400; }
+
+/* =========================================================
+   PROJETO 02 · TRON — neon ciano sobre grade em perspectiva
+   ========================================================= */
+.tron {
+  background: linear-gradient(180deg, var(--bg) 0%, #000 12%, #00070b 55%, #001820 100%);
+}
+.tron-floor {
+  position: absolute;
+  left: -50%;
+  right: -50%;
+  bottom: 0;
+  z-index: -1;
+  height: min(56%, 480px);
+  overflow: hidden;
+  perspective: 340px;
+  perspective-origin: 50% 0;
+  border-top: 1px solid rgba(42, 232, 255, 0.55);
+  box-shadow: 0 -24px 70px -12px rgba(42, 232, 255, 0.35);
+}
+/* Ao chegar na seção, a grade "corre" na direção de quem olha e freia até parar.
+   Uma animação infinita aqui custava ~12% da GPU sem parar (medido); assim ela só gasta por 5 s. */
+.tron-floor::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 200%;
+  background-image:
+    linear-gradient(rgba(42, 232, 255, 0.5) 2px, transparent 2px),
+    linear-gradient(90deg, rgba(42, 232, 255, 0.5) 2px, transparent 2px);
+  background-size: 72px 72px;
+  transform-origin: 50% 0;
+  transform: rotateX(76deg);
+}
+.tron.is-visible .tron-floor::before { animation: grid-run 5s cubic-bezier(0.15, 0.6, 0.3, 1) both; }
+/* Neblina no horizonte (gradiente por cima, sem máscara animada) */
+.tron-floor::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, #00070b 0%, rgba(0, 7, 11, 0.55) 35%, transparent 75%);
+}
+/* Começa 8 células "lá atrás" e vem até a posição normal: o fim é idêntico à grade parada */
+@keyframes grid-run {
+  from { transform: rotateX(76deg) translateY(-576px); }
+}
+
+.tron-title {
+  margin-top: 18px;
+  color: #effdff;
+  font: 900 clamp(68px, 11vw, 168px)/0.9 var(--font-tron);
+  letter-spacing: 0.1em;
+  text-shadow:
+    0 0 6px rgba(42, 232, 255, 0.9),
+    0 0 26px rgba(42, 232, 255, 0.6),
+    0 0 70px rgba(42, 232, 255, 0.35);
+}
+.tron .callout {
+  color: #cdefff;
+  font-family: var(--font-tron);
+  font-size: clamp(16px, 1.7vw, 22px);
+  font-weight: 500;
+  letter-spacing: 0.03em;
+}
+.tron .callout strong {
+  color: var(--tron);
+  font-weight: 900;
+  text-shadow: 0 0 14px var(--tron-glow);
+}
+.tron .arrow {
+  color: var(--tron);
+  filter: drop-shadow(0 0 6px var(--tron-glow));
+}
+
+.tron .frame {
+  border: 2px solid var(--tron);
+  border-radius: 10px;
+  background: #001017;
+  box-shadow: 0 0 0 6px rgba(42, 232, 255, 0.08), 0 0 40px rgba(42, 232, 255, 0.35);
+}
+/* Cantoneiras de "mira" em volta da foto */
+.tron .player::before,
+.tron .player::after {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  width: 34px;
+  height: 34px;
+  border: 3px solid var(--tron);
+  pointer-events: none;
+}
+.tron .player::before { top: -12px; left: -12px; border-right: 0; border-bottom: 0; }
+.tron .player::after { right: -12px; bottom: 30px; border-left: 0; border-top: 0; }
+.tron figcaption {
+  margin-top: 16px;
+  color: var(--tron);
+  font: 700 13px/1 var(--font-tron);
+  letter-spacing: 0.22em;
+  text-align: center;
+  text-transform: uppercase;
+  text-shadow: 0 0 10px var(--tron-glow);
+}
+.tron .photo-fallback {
+  background:
+    linear-gradient(rgba(42, 232, 255, 0.12) 1px, transparent 1px) 0 0 / 24px 24px,
+    linear-gradient(90deg, rgba(42, 232, 255, 0.12) 1px, transparent 1px) 0 0 / 24px 24px,
+    #001017;
+}
+.tron .photo-fallback span {
+  border: 2px solid var(--tron);
+  color: var(--tron);
+  font-family: var(--font-tron);
+  box-shadow: 0 0 24px rgba(42, 232, 255, 0.4), inset 0 0 24px rgba(42, 232, 255, 0.25);
+}
+
+/* =========================================================
+   PROJETO 03 · ROCKET SENAI — garagem com o modelo 3D
+   ========================================================= */
+.rocket {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  overflow: clip;
+  padding: clamp(84px, 10vw, 130px) var(--pad) clamp(48px, 6vw, 72px);
+  background:
+    radial-gradient(70% 45% at 50% 100%, rgba(232, 21, 11, 0.2), transparent 70%),
+    linear-gradient(180deg, #0b0506 0%, #120404 55%, #0a0303 100%);
+}
+/* Faixa quadriculada de bandeirada separando a seção */
+.rocket::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 14px;
+  background: conic-gradient(#f4f4f7 25%, #111 0 50%, #f4f4f7 0 75%, #111 0) 0 0 / 14px 14px;
+  opacity: 0.9;
+}
+
+.rocket-head {
+  max-width: 1400px;
+  margin: 0 auto clamp(24px, 4vw, 40px);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px 40px;
+}
+.rocket-title {
+  margin-top: 16px;
+  font: italic 900 clamp(54px, 9vw, 132px)/0.86 var(--font-rocket);
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+.rocket-title .badge {
+  display: inline-block;
+  padding: 0.12em 0.4em 0.1em;
+  background: var(--rocket);
+  color: #fff;
+  font-size: 0.38em;
+  letter-spacing: 0.04em;
+  vertical-align: middle;
+  translate: 0 -0.2em;
+  clip-path: polygon(8% 0, 100% 0, 92% 100%, 0 100%);
+}
+.rocket-sub {
+  max-width: 30ch;
+  color: var(--ink-2);
+  font-size: clamp(16px, 1.5vw, 19px);
+}
+.rocket-sub strong { color: #fff; }
+
+.garage {
+  position: relative;
+  isolation: isolate;
+  max-width: 1400px;
+  height: min(76vh, 760px);
+  min-height: 380px;
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: 26px;
+  background:
+    radial-gradient(60% 55% at 50% 100%, rgba(232, 21, 11, 0.38), transparent 70%),
+    radial-gradient(45% 40% at 50% 45%, rgba(255, 255, 255, 0.06), transparent 70%),
+    linear-gradient(180deg, #0e0e13, #050507);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 50px 120px -50px var(--rocket-glow);
+}
+.garage-bigtext {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 4%;
+  z-index: 0;
+  color: transparent;
+  font: italic 900 clamp(120px, 24vw, 360px)/0.8 var(--font-rocket);
+  text-align: center;
+  -webkit-text-stroke: 2px rgba(232, 21, 11, 0.28);
+  pointer-events: none;
+  user-select: none;
+}
+/* O player fica invisível enquanto carrega e aparece quando as luzes apagam */
+.garage-stage {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 0.9s ease;
+}
+.garage[data-state="running"] .garage-stage,
+html:not(.js) .garage-stage { opacity: 1; }
+.garage-stage iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  /* Mesmo esquema de cor do Sketchfab; com "dark" o navegador pinta um fundo
+     branco atrás do iframe e o fundo transparente do player deixa de funcionar */
+  color-scheme: normal;
+}
+
+.garage-poster {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 26px;
+  padding: 24px;
+  text-align: center;
+  transition: opacity 0.7s ease, visibility 0s;
+}
+html:not(.js) .garage-poster { display: none; }
+.garage[data-state="running"] .garage-poster {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.7s ease, visibility 0s linear 0.7s;
+}
+
+/* Luzes de largada: acendem uma a uma enquanto o 3D carrega */
+.lights {
+  display: flex;
+  gap: clamp(8px, 1.4vw, 14px);
+  padding: 12px 16px;
+  border-radius: 14px;
+  background: #0b0b0e;
+  box-shadow: inset 0 0 0 2px #1d1d22, 0 20px 40px -20px #000;
+}
+.lights i {
+  width: clamp(22px, 3vw, 32px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #2a0b0b;
+  box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.7);
+}
+.garage[data-state="loading"] .lights i { animation: light-on 0.25s ease-out forwards; }
+.garage[data-state="loading"] .lights i:nth-child(2) { animation-delay: 0.45s; }
+.garage[data-state="loading"] .lights i:nth-child(3) { animation-delay: 0.9s; }
+.garage[data-state="loading"] .lights i:nth-child(4) { animation-delay: 1.35s; }
+.garage[data-state="loading"] .lights i:nth-child(5) { animation-delay: 1.8s; }
+@keyframes light-on {
+  to {
+    background: #ff2318;
+    box-shadow: 0 0 18px 3px rgba(255, 35, 24, 0.7), inset 0 -3px 6px rgba(0, 0, 0, 0.35);
+  }
+}
+
+.ignition {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: clamp(128px, 15vw, 160px);
+  aspect-ratio: 1;
+  border: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 35%, #ff4a3d, #b30d05 70%);
+  box-shadow:
+    0 0 0 6px #1a1a1f,
+    0 0 0 8px rgba(255, 255, 255, 0.12),
+    0 18px 50px -10px var(--rocket-glow);
+  color: #fff;
+  font: italic 900 16px/1.05 var(--font-rocket);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: scale 0.2s var(--ease-pop);
+}
+.ignition:hover { scale: 1.05; }
+.ignition:active { scale: 0.97; }
+.ignition::after {
+  content: "";
+  position: absolute;
+  inset: -16px;
+  border: 2px solid rgba(255, 69, 56, 0.6);
+  border-radius: 50%;
+  opacity: 0;
+}
+/* Pulsa algumas vezes quando a seção aparece e depois descansa (animação parada = GPU parada) */
+.rocket.is-visible .garage[data-state="idle"] .ignition::after { animation: ping 1.8s ease-out 4; }
+.garage[data-state="loading"] .ignition { visibility: hidden; }
+@keyframes ping {
+  from { scale: 0.9; opacity: 1; }
+  to { scale: 1.35; opacity: 0; }
+}
+
+.garage-status {
+  min-height: 1.5em;
+  color: var(--ink-2);
+  font-size: 15px;
+}
+
+.garage-bar {
+  max-width: 1400px;
+  margin: 16px auto 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 20px;
+}
+.garage-hint {
+  color: var(--ink-2);
+  font: 700 12px/1.4 var(--font-tron);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.garage-off {
+  padding: 10px 16px;
+  border: 1px solid rgba(255, 69, 56, 0.55);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--rocket-text);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.garage-off:hover { background: rgba(255, 69, 56, 0.12); }
+.garage-off[hidden] { display: none; }
+
+.credit {
+  max-width: 1400px;
+  margin: 10px auto 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+.credit a { color: var(--ink-2); font-weight: 700; }
+.credit a:hover { color: #fff; }
+
+/* ---------- Rodapé ---------- */
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 24px;
+  padding: 28px var(--pad) 36px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 14px;
+}
+.footer a { color: var(--ink-2); font-weight: 600; text-decoration: none; }
+.footer a:hover { color: var(--ink); }
+
+/* =========================================================
+   Telas menores
+   ========================================================= */
+@media (max-width: 860px) {
+  .hero-inner,
+  .project-inner,
+  .tron .project-inner { grid-template-columns: minmax(0, 1fr); }
+
+  .hero { padding-bottom: 96px; }
+  .group-photo { max-width: 560px; }
+
+  /* No celular a foto vem primeiro e a seta aponta para cima */
+  .player { max-width: 320px; }
+  .tron .player { order: -1; }
+  .brawl .arrow { rotate: 57deg; }
+  .tron .arrow { rotate: -57deg; }
+  .callout { margin-top: 26px; }
+  .arrow { width: 72px; }
+
+  .garage { height: 68vh; min-height: 340px; border-radius: 18px; }
+}
+
+@media (max-width: 560px) {
+  .brand-text { display: none; }
+  .nav a { padding: 9px 11px; font-size: 12px; }
+  .nav .long { display: none; }
+  .brawl-title { -webkit-text-stroke-width: 7px; }
+}
+
+/* Quem pede menos movimento no sistema não vê animações */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0s !important;
+  }
+}
