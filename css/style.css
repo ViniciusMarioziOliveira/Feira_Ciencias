@@ -15,6 +15,7 @@
   --ink-2: #b9b9c8;
   --muted: #80809a;
   --line: rgba(255, 255, 255, 0.12);
+  --line-strong: rgba(255, 255, 255, 0.24);
 
   --brawl: #ffd21f;
   --brawl-pink: #ff4f9a;
@@ -26,6 +27,11 @@
   --rocket: #e8150b;
   --rocket-text: #ff4538;
   --rocket-glow: rgba(232, 21, 11, 0.45);
+
+  /* Eixos do 3D (convenção X vermelho, Y verde, Z azul) */
+  --axis-x: #ff5a4e;
+  --axis-y: #5dff8f;
+  --axis-z: #4f9bff;
 
   --font-display: "Unbounded", "Segoe UI", system-ui, sans-serif;
   --font-body: "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -59,7 +65,7 @@ body {
 img { display: block; max-width: 100%; }
 a { color: inherit; }
 button { font: inherit; color: inherit; }
-h1, h2, p, figure { margin: 0; }
+h1, h2, h3, p, figure, dl, dd { margin: 0; }
 
 :focus-visible {
   outline: 3px solid var(--tron);
@@ -235,169 +241,475 @@ h1, h2, p, figure { margin: 0; }
 }
 
 /* =========================================================
-   INÍCIO
+   INÍCIO — a equipe 7D Games, no clima de um grid de largada de F1
+   Asfalto, faixa quadriculada da largada, vagas pintadas e zebra.
    ========================================================= */
 .hero {
   position: relative;
   isolation: isolate;
   overflow: hidden;
   overflow: clip;
-  min-height: 100vh;
-  min-height: 100svh;
-  display: grid;
-  align-items: center;
-  padding: calc(var(--topbar-h) + 40px) var(--pad) 120px;
-}
-.hero-glow {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
+  padding: calc(var(--topbar-h) + clamp(28px, 4.5vw, 56px)) var(--pad) clamp(76px, 8vw, 108px);
+  /* Granulado de asfalto (SVG minúsculo, desenhado uma vez) + luz vermelha de fim de tarde */
   background:
-    radial-gradient(38% 46% at 10% 30%, rgba(255, 210, 31, 0.13), transparent 70%),
-    radial-gradient(34% 42% at 90% 20%, rgba(42, 232, 255, 0.12), transparent 70%),
-    radial-gradient(50% 45% at 60% 100%, rgba(232, 21, 11, 0.2), transparent 70%);
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0.08 0 0 0 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E") 0 0 / 180px 180px,
+    radial-gradient(55% 45% at 90% 0%, rgba(232, 21, 11, 0.14), transparent 70%),
+    radial-gradient(45% 40% at 0% 35%, rgba(255, 255, 255, 0.035), transparent 70%),
+    var(--bg);
+}
+/* Zebra vermelha e branca fechando a seção */
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 12px;
+  background: repeating-linear-gradient(115deg, var(--rocket) 0 22px, #ececf0 22px 44px);
 }
 .hero-inner {
-  width: 100%;
   max-width: var(--maxw);
   margin: 0 auto;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: clamp(32px, 6vw, 88px);
-  align-items: center;
 }
 
-.group-photo {
-  position: relative;
-  rotate: -2deg;
+.hero-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 430px);
+  gap: clamp(32px, 5vw, 72px);
+  align-items: end;
 }
-.group-photo .frame {
-  aspect-ratio: 4 / 3;
-  border: 3px solid transparent;
-  border-radius: 22px;
-  background:
-    linear-gradient(#12121a, #12121a) padding-box,
-    linear-gradient(135deg, var(--brawl), var(--tron) 50%, var(--rocket)) border-box;
-  box-shadow: 0 40px 90px -40px #000;
-}
-.group-photo .frame img { border-radius: 19px; }
-.group-photo figcaption {
-  position: absolute;
-  left: 22px;
-  bottom: -14px;
-  padding: 8px 14px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: var(--bg);
-  color: var(--ink-2);
-  font: 700 11px/1 var(--font-tron);
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-}
-.group-photo .photo-fallback {
-  border-radius: 19px;
-  background: radial-gradient(70% 70% at 50% 40%, #1d1d2b, #0e0e15);
-}
-.group-photo .photo-fallback span {
-  width: clamp(52px, 7vw, 84px);
-  border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.04);
-  font-size: clamp(14px, 1.7vw, 21px);
-}
-.group-photo .photo-fallback span:nth-child(3n + 1) { color: var(--brawl); border-color: rgba(255, 210, 31, 0.45); }
-.group-photo .photo-fallback span:nth-child(3n + 2) { color: var(--tron); border-color: rgba(42, 232, 255, 0.45); }
-.group-photo .photo-fallback span:nth-child(3n) { color: var(--rocket-text); border-color: rgba(255, 69, 56, 0.45); }
 
 .eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: var(--ink-2);
+  font: 600 12px/1 var(--font-rocket);
+  font-stretch: 125%;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+/* As 5 luzes acendem uma a uma e apagam juntas, uma vez, quando a página abre */
+.start-lights {
+  display: inline-flex;
+  flex: none;
+  gap: 5px;
+  padding: 5px 7px;
+  border-radius: 99px;
+  background: #0b0b0e;
+  box-shadow: inset 0 0 0 1.5px #202026;
+}
+.start-lights i {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #2a0b0b;
+  animation:
+    lamp-on 0.1s linear calc(0.6s + var(--i, 0) * 0.5s) both,
+    lamp-off 0.15s ease-in 3.5s forwards;
+}
+.start-lights i:nth-child(2) { --i: 1; }
+.start-lights i:nth-child(3) { --i: 2; }
+.start-lights i:nth-child(4) { --i: 3; }
+.start-lights i:nth-child(5) { --i: 4; }
+@keyframes lamp-on {
+  to { background: #ff2318; box-shadow: 0 0 9px 1px rgba(255, 35, 24, 0.75); }
+}
+@keyframes lamp-off {
+  from { background: #ff2318; box-shadow: 0 0 9px 1px rgba(255, 35, 24, 0.75); }
+  to { background: #2a0b0b; box-shadow: none; }
+}
+
+.hero-copy { container-type: inline-size; }
+.hero h1 {
+  margin: 24px 0 22px;
+  font: italic 900 clamp(48px, 8vw, 112px)/0.86 var(--font-rocket);
+  font-size: clamp(46px, 16.5cqi, 120px); /* "7D GAMES" ocupa ~92% da coluna, sem quebrar */
+  font-stretch: 125%;
+  letter-spacing: -0.015em;
+  text-transform: uppercase;
+}
+.lead {
+  max-width: 46ch;
+  color: var(--ink-2);
+  font-size: clamp(16px, 1.3vw, 18px);
+}
+
+/* Botão em paralelogramo (o fundo inclinado fica num pseudo-elemento para o contorno de foco não ser cortado) */
+.btn-race {
+  position: relative;
+  isolation: isolate;
   display: inline-flex;
   align-items: center;
   gap: 12px;
-  color: var(--ink-2);
-  font: 700 12px/1 var(--font-tron);
-  letter-spacing: 0.28em;
+  margin: 30px 0 0 8px;
+  padding: 16px 28px;
+  color: #fff;
+  font: italic 800 15px/1 var(--font-rocket);
+  font-stretch: 112%;
+  letter-spacing: 0.08em;
+  text-decoration: none;
   text-transform: uppercase;
 }
-.eyebrow::before {
+.btn-race::before {
   content: "";
-  width: 30px;
-  height: 2px;
-  background: linear-gradient(90deg, var(--brawl), var(--tron), var(--rocket));
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--rocket);
+  transform: skewX(-14deg);
+  transition: background-color 0.2s;
 }
-.hero h1 {
-  margin: 20px 0 14px;
-  font: 900 clamp(30px, 3.7vw, 50px)/1.05 var(--font-display);
-  letter-spacing: -0.02em;
+.btn-race::after {
+  content: "↓";
+  font-style: normal;
+  transition: transform 0.25s var(--ease-out);
 }
-.hero h1 .grad {
-  background: linear-gradient(90deg, var(--brawl) 18%, var(--tron) 45% 60%, var(--rocket-text) 85%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-.lead {
-  max-width: 34ch;
-  color: var(--ink-2);
-  font-size: clamp(16px, 1.5vw, 19px);
-}
+.btn-race:hover::before { background: #ff2a1f; }
+.btn-race:hover::after { transform: translateY(3px); }
 
-.members-title {
-  margin: 34px 0 4px;
+/* ---------- Os projetos, como uma tabela de classificação ---------- */
+.standings-label {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 2px 10px;
   color: var(--muted);
-  font: 700 12px/1 var(--font-tron);
-  letter-spacing: 0.28em;
+  font: 600 11px/1 var(--font-rocket);
+  font-stretch: 125%;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
 }
-.members {
+.standings-list,
+.crew {
   margin: 0;
   padding: 0;
   list-style: none;
-  counter-reset: member;
 }
-.members li {
-  counter-increment: member;
-  display: flex;
-  align-items: baseline;
-  gap: 16px;
-  padding: 10px 0;
+.standings-list {
+  margin-bottom: 26px;
   border-bottom: 1px solid var(--line);
-  color: var(--ink-2);
-  font-size: clamp(15px, 1.35vw, 18px);
 }
-.members li::before {
-  content: counter(member, decimal-leading-zero);
-  min-width: 2.2ch;
-  color: var(--muted);
-  font: 700 11px/1 var(--font-tron);
-  letter-spacing: 0.08em;
-}
-.members b { color: var(--ink); font-weight: 700; }
-
-.scroll-cue {
-  position: absolute;
-  left: 50%;
-  bottom: 28px;
-  translate: -50% 0;
+.standings-list a {
+  position: relative;
   display: grid;
-  justify-items: center;
-  gap: 10px;
-  color: var(--muted);
-  font: 700 10px/1 var(--font-tron);
-  letter-spacing: 0.25em;
-  text-transform: uppercase;
+  grid-template-columns: 50px minmax(0, 1fr) auto;
+  grid-template-areas:
+    "no name who"
+    "no type who";
+  column-gap: 16px;
+  align-items: center;
+  padding-right: 34px;
+  border-top: 1px solid var(--line);
   text-decoration: none;
-  white-space: nowrap;
+  transition: background-color 0.2s;
 }
-.scroll-cue::after {
+.standings-list a::after {
+  content: "↓";
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  translate: 0 -50%;
+  color: var(--muted);
+  transition: transform 0.25s var(--ease-out), color 0.2s;
+}
+.st-no {
+  grid-area: no;
+  align-self: stretch;
+  display: grid;
+  place-items: center;
+  background: #17181c;
+  color: #fff;
+  font: italic 800 17px/1 var(--font-rocket);
+  font-stretch: 112%;
+  transition: background-color 0.2s;
+}
+.st-name {
+  grid-area: name;
+  padding-top: 15px;
+  color: #fff;
+  font: italic 900 clamp(19px, 1.7vw, 23px)/1 var(--font-rocket);
+  font-stretch: 112%;
+  text-transform: uppercase;
+}
+.st-meta { display: contents; }
+.st-type {
+  grid-area: type;
+  padding: 7px 0 15px;
+  color: var(--muted);
+  font: 600 11px/1 var(--font-rocket);
+  font-stretch: 112%;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.st-who {
+  grid-area: who;
+  max-width: 13ch;
+  color: var(--ink-2);
+  font-size: 14px;
+  line-height: 1.3;
+  text-align: right;
+}
+
+.crew {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.crew li {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 13px;
+  border: 1px solid var(--line);
+  color: var(--ink-2);
+  font-size: 14px;
+  line-height: 1;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+.crew b {
+  color: #fff;
+  font: italic 800 13px/1 var(--font-rocket);
+  font-stretch: 112%;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* ---------- Grid de largada: um cartão de piloto por integrante ---------- */
+.grid-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 8px 24px;
+  margin-top: clamp(52px, 5.5vw, 76px);
+}
+.grid-title {
+  font: italic 900 clamp(26px, 2.6vw, 34px)/1 var(--font-rocket);
+  font-stretch: 112%;
+  text-transform: uppercase;
+}
+.grid-sub {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 14px;
+}
+.grid-hint { color: var(--muted); font-size: 13px; }
+@media (hover: none) { .grid-hint { display: none; } }
+
+.grid {
+  --stagger: 56px;
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  align-items: start;
+  gap: 40px 16px;
+  margin: 22px 0 0;
+  padding: 46px 0 0;
+  list-style: none;
+}
+/* O grid aparece de uma vez, vaga por vaga (cada uma tem o seu --d) */
+.js .grid[data-reveal] {
+  opacity: 1;
+  translate: none;
+  transition: none;
+}
+.js .grid[data-reveal] > .slot {
+  opacity: 0;
+  translate: 0 36px;
+  transition: opacity 0.7s var(--ease-out) var(--d, 0ms), translate 0.7s var(--ease-out) var(--d, 0ms);
+}
+.js .grid[data-reveal].is-in > .slot {
+  opacity: 1;
+  translate: none;
+}
+/* Faixa quadriculada da largada, de uma ponta à outra da tela */
+.grid::before {
   content: "";
-  width: 12px;
-  height: 12px;
-  border-right: 2px solid currentColor;
-  border-bottom: 2px solid currentColor;
-  rotate: 45deg;
-  animation: cue 1.6s ease-in-out infinite paused;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 100vw;
+  height: 16px;
+  translate: -50% 0;
+  background: conic-gradient(#ececf0 25%, #111114 0 50%, #ececf0 0 75%, #111114 0) 0 0 / 16px 16px;
 }
-.hero.is-visible .scroll-cue::after { animation-play-state: running; }
-@keyframes cue { 50% { translate: 0 6px; } }
+/* Vagas alternadas, como no grid de verdade */
+.slot { position: relative; }
+.slot:nth-child(even) { margin-top: var(--stagger); }
+/* Marca pintada no asfalto na frente de cada vaga */
+.slot::before {
+  content: "";
+  position: absolute;
+  inset: -16px -6px auto;
+  height: 26px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-bottom: 0;
+}
+
+.driver {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  background: linear-gradient(180deg, #141519, #0e0f12);
+  transition: transform 0.35s var(--ease-out), filter 0.35s, border-color 0.3s, box-shadow 0.35s;
+}
+.driver::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 2;
+  height: 3px;
+  background: var(--rocket);
+  transform: scaleX(0.3);
+  transform-origin: 0 50%;
+  transition: transform 0.45s var(--ease-out);
+}
+.driver-photo {
+  position: relative;
+  container-type: inline-size;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background:
+    radial-gradient(110% 70% at 100% 100%, rgba(232, 21, 11, 0.24), transparent 65%),
+    repeating-linear-gradient(-60deg, rgba(255, 255, 255, 0.028) 0 1px, transparent 1px 10px),
+    #101115;
+}
+.driver-photo img {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 30%;
+}
+.driver-photo.is-missing img { display: none; }
+/* Número gigante vazado: fica atrás da foto e aparece enquanto ela não existe */
+.driver-big {
+  position: absolute;
+  right: 0.04em;
+  bottom: -0.1em;
+  color: transparent;
+  font: italic 900 clamp(76px, 7.6vw, 112px)/1 var(--font-rocket);
+  font-size: 70cqi; /* acompanha a largura do cartão */
+  font-stretch: 125%;
+  letter-spacing: -0.03em;
+  -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.24);
+  transition: -webkit-text-stroke-color 0.35s;
+}
+.driver-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+.driver-code {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font: 700 11px/1 var(--font-rocket);
+  font-stretch: 125%;
+  letter-spacing: 0.18em;
+}
+.driver-code b {
+  color: var(--rocket-text);
+  font-size: 14px;
+  font-style: italic;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+}
+.driver-name {
+  color: #fff;
+  font: italic 900 clamp(16px, 1.45vw, 19px)/1 var(--font-rocket);
+  font-stretch: 112%;
+  text-transform: uppercase;
+}
+.driver-name span {
+  display: block;
+  min-height: 2.6em;
+  margin-top: 6px;
+  color: var(--ink-2);
+  font: 400 12.5px/1.3 var(--font-body);
+  text-transform: none;
+}
+/* Espaço para duas funções em todos os cartões, assim eles ficam da mesma altura */
+.driver-role {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-end;
+  gap: 5px 12px;
+  min-height: calc(2.4em + 5px);
+  margin-top: auto;
+  color: #fff;
+  font: 700 10.5px/1.2 var(--font-rocket);
+  font-stretch: 112%;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.driver-role span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.driver-role span::before {
+  content: "";
+  width: 9px;
+  height: 3px;
+  background: var(--rocket);
+  transform: skewX(-24deg);
+}
+
+/* Vaga livre (só nas telas em que o grid quebra em filas) */
+.slot-open { display: none; }
+.slot-open .driver {
+  border: 1.5px dashed rgba(255, 255, 255, 0.18);
+  background: none;
+}
+.slot-open .driver::before { display: none; }
+.slot-open .driver-photo { background: none; }
+.slot-open .driver-big { -webkit-text-stroke-color: rgba(255, 255, 255, 0.1); }
+.slot-open .driver-info { border-top-style: dashed; }
+
+/* Passar o mouse (ou o foco) num projeto destaca quem fez; num cartão, destaca o projeto */
+.hero:has([data-show]:is(:hover, :focus-visible)) .driver { filter: grayscale(1) brightness(0.4); }
+.driver:hover,
+.hero:has([data-show="brawl"]:is(:hover, :focus-visible)) [data-project~="brawl"] .driver,
+.hero:has([data-show="tron"]:is(:hover, :focus-visible)) [data-project~="tron"] .driver,
+.hero:has([data-show="rocket"]:is(:hover, :focus-visible)) [data-project~="rocket"] .driver,
+.hero:has([data-show="site"]:is(:hover, :focus-visible)) [data-project~="site"] .driver,
+.hero:has([data-show="banners"]:is(:hover, :focus-visible)) [data-project~="banners"] .driver {
+  filter: none;
+  transform: translateY(-6px);
+  border-color: rgba(255, 69, 56, 0.55);
+  box-shadow: 0 26px 46px -26px rgba(232, 21, 11, 0.75);
+}
+.driver:hover::before,
+.hero:has([data-show="brawl"]:is(:hover, :focus-visible)) [data-project~="brawl"] .driver::before,
+.hero:has([data-show="tron"]:is(:hover, :focus-visible)) [data-project~="tron"] .driver::before,
+.hero:has([data-show="rocket"]:is(:hover, :focus-visible)) [data-project~="rocket"] .driver::before,
+.hero:has([data-show="site"]:is(:hover, :focus-visible)) [data-project~="site"] .driver::before,
+.hero:has([data-show="banners"]:is(:hover, :focus-visible)) [data-project~="banners"] .driver::before { transform: scaleX(1); }
+.driver:hover .driver-big { -webkit-text-stroke-color: rgba(255, 69, 56, 0.7); }
+.slot-open .driver:hover { transform: none; border-color: rgba(255, 255, 255, 0.18); box-shadow: none; }
+
+.standings-list a:is(:hover, :focus-visible),
+.hero:has([data-project~="brawl"] .driver:hover) [data-show="brawl"],
+.hero:has([data-project~="tron"] .driver:hover) [data-show="tron"],
+.hero:has([data-project~="rocket"] .driver:hover) [data-show="rocket"] { background: rgba(255, 255, 255, 0.05); }
+.standings-list a:is(:hover, :focus-visible) .st-no,
+.hero:has([data-project~="brawl"] .driver:hover) [data-show="brawl"] .st-no,
+.hero:has([data-project~="tron"] .driver:hover) [data-show="tron"] .st-no,
+.hero:has([data-project~="rocket"] .driver:hover) [data-show="rocket"] .st-no { background: var(--rocket); }
+.standings-list a:hover::after { transform: translateY(3px); color: #fff; }
+.crew li:hover,
+.hero:has([data-project~="site"] .driver:hover) [data-show="site"],
+.hero:has([data-project~="banners"] .driver:hover) [data-show="banners"] {
+  border-color: rgba(255, 69, 56, 0.6);
+  background: rgba(232, 21, 11, 0.1);
+}
 
 /* ---------- Divisória "//" do rascunho ---------- */
 .divider {
@@ -693,42 +1005,520 @@ h1, h2, p, figure { margin: 0; }
 }
 
 /* =========================================================
-   PROJETO 03 · ROCKET SENAI — garagem com o modelo 3D
+   PROJETO 03 · ROCKET SENAI — o carro em 3D, guiado pela rolagem
+   O palco (.rk-stage) fica preso na tela enquanto os capítulos passam por cima dele.
    ========================================================= */
 .rocket {
   position: relative;
   isolation: isolate;
-  overflow: hidden;
-  overflow: clip;
-  padding: clamp(84px, 10vw, 130px) var(--pad) clamp(48px, 6vw, 72px);
-  background:
-    radial-gradient(70% 45% at 50% 100%, rgba(232, 21, 11, 0.2), transparent 70%),
-    linear-gradient(180deg, #0b0506 0%, #120404 55%, #0a0303 100%);
+  background: #050506;
 }
 /* Faixa quadriculada de bandeirada separando a seção */
 .rocket::before {
   content: "";
   position: absolute;
   inset: 0 0 auto;
+  z-index: 3;
   height: 14px;
   background: conic-gradient(#f4f4f7 25%, #111 0 50%, #f4f4f7 0 75%, #111 0) 0 0 / 14px 14px;
   opacity: 0.9;
 }
+/* Só aparece ao chegar pelo teclado (Tab) */
+.rk-skip {
+  top: calc(var(--topbar-h) + 24px);
+  opacity: 0;
+  pointer-events: none;
+}
+.rk-skip:focus {
+  top: calc(var(--topbar-h) + 24px);
+  opacity: 1;
+  pointer-events: auto;
+}
 
-.rocket-head {
-  max-width: 1400px;
-  margin: 0 auto clamp(24px, 4vw, 40px);
+.rk-scrolly { position: relative; }
+
+.rk-stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100lvh;
+  overflow: hidden;
+  /* Foto do carro enquanto o 3D carrega (ou se o navegador não tiver WebGL) */
+  background: #050506 url("../img/rocket-poster.webp") 72% 50% / cover no-repeat;
+}
+.rk-canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+.rk-stage.is-ready .rk-canvas { opacity: 1; }
+
+/* Sombra lateral para o texto dos capítulos ficar legível sobre o 3D (o JS a apaga na visão do piloto) */
+.rk-shade {
+  position: absolute;
+  inset: 0;
+  opacity: var(--shade, 1);
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(5, 5, 6, 0.78) 0%, rgba(5, 5, 6, 0.35) 34%, transparent 56%),
+    linear-gradient(0deg, rgba(5, 5, 6, 0.55), transparent 22%),
+    linear-gradient(180deg, rgba(5, 5, 6, 0.6), transparent 18%);
+}
+
+/* ---------- HUD ---------- */
+.rk-hud {
+  position: absolute;
+  inset: 0;
+  color: #fff;
+  font-family: var(--font-tron);
+  pointer-events: none;
+}
+.rk-hud-top {
+  position: absolute;
+  top: calc(var(--topbar-h) + 18px);
+  left: var(--pad);
+  right: var(--pad);
   display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
   justify-content: space-between;
-  gap: 16px 40px;
+  align-items: center;
+  gap: 16px;
+  font-size: 11px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+.rk-tag { display: inline-flex; align-items: center; gap: 10px; color: var(--ink-2); }
+.rk-tag i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--rocket);
+  box-shadow: 0 0 12px var(--rocket);
+}
+.rk-count { color: var(--muted); font-variant-numeric: tabular-nums; }
+.rk-count b { color: var(--rocket-text); font-weight: 700; }
+
+[data-panel] {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.45s ease, visibility 0s linear 0.45s;
+}
+[data-panel].is-on {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.45s ease, visibility 0s;
+}
+.rk-panel {
+  position: absolute;
+  right: var(--pad);
+  bottom: clamp(20px, 4.5vh, 44px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  background: rgba(8, 8, 10, 0.74);
+}
+
+/* Eixos X, Y e Z do carro */
+.rk-axes {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 14px 20px 14px 14px;
+}
+.rk-gizmo { width: 112px; height: 112px; overflow: visible; }
+.rk-gizmo-ring { fill: none; stroke: rgba(255, 255, 255, 0.1); stroke-dasharray: 2 5; }
+.rk-gizmo line { stroke-width: 3.5; stroke-linecap: round; }
+.rk-gizmo text { font: 900 12px var(--font-tron); text-anchor: middle; dominant-baseline: central; }
+.rk-gizmo .ax-x { stroke: var(--axis-x); fill: var(--axis-x); }
+.rk-gizmo .ax-y { stroke: var(--axis-y); fill: var(--axis-y); }
+.rk-gizmo .ax-z { stroke: var(--axis-z); fill: var(--axis-z); }
+.rk-gizmo text { stroke: none; }
+.rk-readout {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 7px 16px;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.rk-readout div { display: contents; }
+.rk-readout dt { color: var(--muted); }
+.rk-readout dd { text-align: right; font-variant-numeric: tabular-nums; }
+.rk-readout .ax-x dt { color: var(--axis-x); }
+.rk-readout .ax-y dt { color: var(--axis-y); }
+.rk-readout .ax-z dt { color: var(--axis-z); }
+
+/* Ponto que marca a ESP32-CAM no carro (o JS projeta a posição 3D na tela) */
+.rk-hotspot {
+  position: absolute;
+  left: 0;
+  top: 0;
+  will-change: transform;
+}
+.rk-hotspot-dot {
+  position: absolute;
+  left: -8px;
+  top: -8px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--rocket);
+  box-shadow: 0 0 0 3px #fff, 0 0 22px var(--rocket);
+}
+.rk-hotspot-dot::after {
+  content: "";
+  position: absolute;
+  inset: -12px;
+  border: 2px solid rgba(255, 69, 56, 0.85);
+  border-radius: 50%;
+  opacity: 0;
+}
+.rocket.is-visible .rk-hotspot.is-on .rk-hotspot-dot::after { animation: ping 1.6s ease-out infinite; }
+.rk-hotspot::before {
+  content: "";
+  position: absolute;
+  left: 8px;
+  top: -8px;
+  width: 52px;
+  height: 1.5px;
+  background: rgba(255, 255, 255, 0.75);
+  rotate: -32deg;
+  transform-origin: 0 50%;
+}
+.rk-hotspot-label {
+  position: absolute;
+  left: 52px;
+  top: -76px;
+  padding: 10px 14px;
+  border-left: 2px solid var(--rocket);
+  background: rgba(8, 8, 10, 0.86);
+  color: var(--ink-2);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.rk-hotspot-label b {
+  display: block;
+  margin-bottom: 4px;
+  color: #fff;
+  font-size: 14px;
+  letter-spacing: 0.12em;
+}
+@media (min-width: 761px) {
+  .rk-hotspot.is-flipped::before { left: auto; right: 8px; rotate: 32deg; transform-origin: 100% 50%; }
+  .rk-hotspot.is-flipped .rk-hotspot-label {
+    left: auto;
+    right: 52px;
+    border-left: 0;
+    border-right: 2px solid var(--rocket);
+    text-align: right;
+  }
+}
+@keyframes ping {
+  from { scale: 0.7; opacity: 1; }
+  to { scale: 1.5; opacity: 0; }
+}
+
+/* Luzes de largada e o "Luzes apagadas!" */
+.rk-lights {
+  position: absolute;
+  left: 50%;
+  top: calc(var(--topbar-h) + 60px);
+  translate: -50% 0;
+  display: flex;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: #0b0b0e;
+  box-shadow: inset 0 0 0 2px #1d1d22, 0 16px 40px -16px #000;
+}
+.rk-lights i,
+.rk-loader .lights i {
+  width: clamp(18px, 2.4vw, 26px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #2a0b0b;
+  box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.7);
+  transition: background-color 0.08s, box-shadow 0.08s;
+}
+.rk-lights i.on,
+.rk-loader .lights i.on {
+  background: #ff2318;
+  box-shadow: 0 0 18px 3px rgba(255, 35, 24, 0.7), inset 0 -3px 6px rgba(0, 0, 0, 0.35);
+}
+.rk-flash {
+  position: absolute;
+  left: 50%;
+  top: 36%;
+  translate: -50% -50%;
+  color: #fff;
+  font: italic 900 clamp(36px, 6.5vw, 92px)/1 var(--font-rocket);
+  text-transform: uppercase;
+  text-shadow: 0 0 40px rgba(255, 69, 56, 0.7), 0 6px 0 rgba(0, 0, 0, 0.5);
+  white-space: nowrap;
+  opacity: 0;
+}
+.rk-flash.is-on { animation: flash 1.7s var(--ease-out) both; }
+@keyframes flash {
+  0% { opacity: 0; scale: 0.7; }
+  14% { opacity: 1; scale: 1.05; }
+  70% { opacity: 1; scale: 1; }
+  100% { opacity: 0; scale: 1.08; }
+}
+
+/* Telemetria: mapa da pista, velocidade, marcha e volta */
+.rk-telemetry {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas:
+    "map speed"
+    "map gear"
+    "rpm rpm"
+    "lap lap";
+  align-items: end;
+  gap: 4px 18px;
+  min-width: 340px;
+  padding: 14px 18px 12px;
+}
+.rk-map { grid-area: map; width: 132px; height: auto; overflow: visible; }
+.rk-map-track {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.7);
+  stroke-width: 3.5;
+  stroke-linejoin: round;
+}
+.rk-map-start { fill: #fff; }
+.rk-map-car {
+  fill: var(--rocket-text);
+  stroke: #fff;
+  stroke-width: 1.5;
+}
+.rk-speed { grid-area: speed; justify-self: end; display: flex; align-items: baseline; gap: 8px; }
+.rk-speed b {
+  font: italic 900 clamp(40px, 4vw, 56px)/0.9 var(--font-rocket);
+  font-variant-numeric: tabular-nums;
+}
+.rk-speed span,
+.rk-gear span {
+  color: var(--ink-2);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.rk-gear { grid-area: gear; justify-self: end; display: flex; align-items: baseline; gap: 10px; }
+.rk-gear b { color: var(--rocket-text); font-size: 22px; font-weight: 900; }
+.rk-rpm {
+  grid-area: rpm;
+  height: 5px;
+  margin-top: 8px;
+  overflow: hidden;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.12);
+}
+.rk-rpm i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--axis-y), var(--brawl) 70%, #ff2318);
+  transform: scaleX(var(--rpm, 0));
+  transform-origin: 0 50%;
+}
+.rk-lap {
+  grid-area: lap;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+  color: var(--ink-2);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+}
+.rk-lap b { color: #fff; }
+
+/* Moldura de "câmera de bordo" na visão do piloto */
+.rk-cam {
+  position: absolute;
+  inset: calc(var(--topbar-h) + 52px) var(--pad) clamp(20px, 4vh, 40px);
+  color: #fff;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+.rk-cam::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  --l: 34px;
+  background:
+    linear-gradient(#fff, #fff) 0 0 / var(--l) 2px,
+    linear-gradient(#fff, #fff) 0 0 / 2px var(--l),
+    linear-gradient(#fff, #fff) 100% 0 / var(--l) 2px,
+    linear-gradient(#fff, #fff) 100% 0 / 2px var(--l),
+    linear-gradient(#fff, #fff) 0 100% / var(--l) 2px,
+    linear-gradient(#fff, #fff) 0 100% / 2px var(--l),
+    linear-gradient(#fff, #fff) 100% 100% / var(--l) 2px,
+    linear-gradient(#fff, #fff) 100% 100% / 2px var(--l);
+  background-repeat: no-repeat;
+  opacity: 0.85;
+}
+/* Linhas de varredura e vinheta, como um vídeo de câmera pequena (o palco ocupa a tela inteira nessa hora) */
+.rk-cam::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(120% 90% at 50% 50%, transparent 55%, rgba(0, 0, 0, 0.55)),
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.18) 0 1px, transparent 1px 3px);
+}
+.rk-cam > span { position: absolute; }
+.rk-cam-rec { top: 16px; left: 18px; display: inline-flex; align-items: center; gap: 8px; }
+.rk-cam-rec::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ff2318;
+  box-shadow: 0 0 10px #ff2318;
+}
+.rocket.is-visible .rk-cam.is-on .rk-cam-rec::before { animation: rec 1s steps(1) infinite; }
+@keyframes rec { 50% { opacity: 0; } }
+.rk-cam-id { top: 16px; right: 18px; }
+.rk-cam-clock { bottom: 14px; left: 18px; font-variant-numeric: tabular-nums; }
+.rk-cam-cross {
+  left: 50%;
+  top: 50%;
+  width: 26px;
+  height: 26px;
+  translate: -50% -50%;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7)) 50% 0 / 1.5px 9px no-repeat,
+    linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7)) 50% 100% / 1.5px 9px no-repeat,
+    linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7)) 0 50% / 9px 1.5px no-repeat,
+    linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7)) 100% 50% / 9px 1.5px no-repeat;
+}
+
+/* ---------- Carregamento: as 5 luzes acendem conforme o modelo baixa ---------- */
+.rk-loader {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 22px;
+  padding: 24px;
+  text-align: center;
+  background: radial-gradient(60% 50% at 50% 55%, rgba(5, 5, 6, 0.35), rgba(5, 5, 6, 0.88));
+  transition: opacity 0.9s ease, visibility 0s;
+}
+.rk-stage.is-ready .rk-loader {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.9s ease, visibility 0s linear 0.9s;
+}
+html:not(.js) .rk-loader { display: none; }
+.rk-loader .lights {
+  display: flex;
+  gap: clamp(8px, 1.4vw, 14px);
+  padding: 12px 16px;
+  border-radius: 14px;
+  background: #0b0b0e;
+  box-shadow: inset 0 0 0 2px #1d1d22, 0 20px 40px -20px #000;
+}
+.rk-loader-status {
+  max-width: 38ch;
+  color: var(--ink-2);
+  font: 700 12px/1.6 var(--font-tron);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.rk-load {
+  padding: 12px 20px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--rocket);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  pointer-events: auto;
+}
+.rk-load[hidden] { display: none; }
+
+/* Corte rápido para preto quando o carro volta ao grid */
+.rk-fade {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease;
+}
+.rk-fade.is-on { opacity: 1; }
+
+/* ---------- Capítulos ---------- */
+.rk-chapters {
+  position: relative;
+  z-index: 2;
+  margin-top: -100vh;
+  margin-top: -100lvh;
+}
+.rk-chapter {
+  display: flex;
+  align-items: center;
+  min-height: 100vh;
+  min-height: 100lvh;
+  padding: calc(var(--topbar-h) + 48px) var(--pad) 48px;
+  pointer-events: none;
+}
+.rk-chapter.rk-tall { min-height: 170vh; min-height: 170lvh; }
+.rk-card {
+  width: min(100%, 460px);
+  margin-left: max(0px, calc((100% - var(--maxw)) / 2));
+  padding: 26px 28px 28px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-left: 3px solid var(--rocket);
+  border-radius: 4px 18px 18px 4px;
+  background: linear-gradient(135deg, rgba(10, 10, 13, 0.92), rgba(10, 10, 13, 0.76));
+  box-shadow: 0 30px 60px -30px #000;
+  pointer-events: auto;
+}
+.rk-card p { color: var(--ink-2); font-size: clamp(15.5px, 1.25vw, 17.5px); }
+.rk-card p + p { margin-top: 12px; }
+.rk-card strong { color: #fff; }
+.rk-card b.ax-x { color: var(--axis-x); }
+.rk-card b.ax-y { color: var(--axis-y); }
+.rk-card b.ax-z { color: var(--axis-z); }
+.rk-kicker {
+  color: var(--rocket-text);
+  font: 700 11px/1 var(--font-tron);
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+}
+.rk-card .rk-kicker { color: var(--rocket-text); font-size: 11px; }
+.rk-card h3 {
+  margin: 14px 0 12px;
+  color: #fff;
+  font: italic 900 clamp(30px, 3.3vw, 46px)/0.98 var(--font-rocket);
+  text-transform: uppercase;
+}
+
+/* Abertura: título gigante direto sobre o carro */
+.rk-intro .rk-card {
+  width: min(100%, 640px);
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
 }
 .rocket-title {
-  margin-top: 16px;
-  font: italic 900 clamp(54px, 9vw, 132px)/0.86 var(--font-rocket);
+  margin-top: 18px;
+  font: italic 900 clamp(60px, 10.5vw, 156px)/0.86 var(--font-rocket);
   letter-spacing: -0.01em;
   text-transform: uppercase;
+  text-shadow: 0 12px 50px rgba(0, 0, 0, 0.6);
 }
 .rocket-title .badge {
   display: inline-block;
@@ -741,184 +1531,102 @@ h1, h2, p, figure { margin: 0; }
   translate: 0 -0.2em;
   clip-path: polygon(8% 0, 100% 0, 92% 100%, 0 100%);
 }
-.rocket-sub {
-  max-width: 30ch;
-  color: var(--ink-2);
-  font-size: clamp(16px, 1.5vw, 19px);
-}
-.rocket-sub strong { color: #fff; }
-
-.garage {
-  position: relative;
-  isolation: isolate;
-  max-width: 1400px;
-  height: min(76vh, 760px);
-  min-height: 380px;
-  margin: 0 auto;
-  overflow: hidden;
-  border-radius: 26px;
-  background:
-    radial-gradient(60% 55% at 50% 100%, rgba(232, 21, 11, 0.38), transparent 70%),
-    radial-gradient(45% 40% at 50% 45%, rgba(255, 255, 255, 0.06), transparent 70%),
-    linear-gradient(180deg, #0e0e13, #050507);
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 50px 120px -50px var(--rocket-glow);
-}
-.garage-bigtext {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 4%;
-  z-index: 0;
-  color: transparent;
-  font: italic 900 clamp(120px, 24vw, 360px)/0.8 var(--font-rocket);
-  text-align: center;
-  -webkit-text-stroke: 2px rgba(232, 21, 11, 0.28);
-  pointer-events: none;
-  user-select: none;
-}
-/* O player fica invisível enquanto carrega e aparece quando as luzes apagam */
-.garage-stage {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  opacity: 0;
-  transition: opacity 0.9s ease;
-}
-.garage[data-state="running"] .garage-stage,
-html:not(.js) .garage-stage { opacity: 1; }
-.garage-stage iframe {
-  display: block;
-  width: 100%;
-  height: 100%;
-  border: 0;
-  /* Mesmo esquema de cor do Sketchfab; com "dark" o navegador pinta um fundo
-     branco atrás do iframe e o fundo transparente do player deixa de funcionar */
-  color-scheme: normal;
-}
-
-.garage-poster {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  display: grid;
-  place-content: center;
-  justify-items: center;
-  gap: 26px;
-  padding: 24px;
-  text-align: center;
-  transition: opacity 0.7s ease, visibility 0s;
-}
-html:not(.js) .garage-poster { display: none; }
-.garage[data-state="running"] .garage-poster {
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.7s ease, visibility 0s linear 0.7s;
-}
-
-/* Luzes de largada: acendem uma a uma enquanto o 3D carrega */
-.lights {
-  display: flex;
-  gap: clamp(8px, 1.4vw, 14px);
-  padding: 12px 16px;
-  border-radius: 14px;
-  background: #0b0b0e;
-  box-shadow: inset 0 0 0 2px #1d1d22, 0 20px 40px -20px #000;
-}
-.lights i {
-  width: clamp(22px, 3vw, 32px);
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background: #2a0b0b;
-  box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.7);
-}
-.garage[data-state="loading"] .lights i { animation: light-on 0.25s ease-out forwards; }
-.garage[data-state="loading"] .lights i:nth-child(2) { animation-delay: 0.45s; }
-.garage[data-state="loading"] .lights i:nth-child(3) { animation-delay: 0.9s; }
-.garage[data-state="loading"] .lights i:nth-child(4) { animation-delay: 1.35s; }
-.garage[data-state="loading"] .lights i:nth-child(5) { animation-delay: 1.8s; }
-@keyframes light-on {
-  to {
-    background: #ff2318;
-    box-shadow: 0 0 18px 3px rgba(255, 35, 24, 0.7), inset 0 -3px 6px rgba(0, 0, 0, 0.35);
-  }
-}
-
-.ignition {
-  position: relative;
-  display: grid;
-  place-items: center;
-  width: clamp(128px, 15vw, 160px);
-  aspect-ratio: 1;
-  border: 0;
-  border-radius: 50%;
-  background: radial-gradient(circle at 50% 35%, #ff4a3d, #b30d05 70%);
-  box-shadow:
-    0 0 0 6px #1a1a1f,
-    0 0 0 8px rgba(255, 255, 255, 0.12),
-    0 18px 50px -10px var(--rocket-glow);
+.rk-intro .rk-lead {
+  max-width: 21ch;
+  margin: 22px 0 12px;
   color: #fff;
-  font: italic 900 16px/1.05 var(--font-rocket);
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: scale 0.2s var(--ease-pop);
+  font: italic 700 clamp(22px, 2.4vw, 32px)/1.15 var(--font-rocket);
 }
-.ignition:hover { scale: 1.05; }
-.ignition:active { scale: 0.97; }
-.ignition::after {
-  content: "";
-  position: absolute;
-  inset: -16px;
-  border: 2px solid rgba(255, 69, 56, 0.6);
-  border-radius: 50%;
-  opacity: 0;
-}
-/* Pulsa algumas vezes quando a seção aparece e depois descansa (animação parada = GPU parada) */
-.rocket.is-visible .garage[data-state="idle"] .ignition::after { animation: ping 1.8s ease-out 4; }
-.garage[data-state="loading"] .ignition { visibility: hidden; }
-@keyframes ping {
-  from { scale: 0.9; opacity: 1; }
-  to { scale: 1.35; opacity: 0; }
-}
-
-.garage-status {
-  min-height: 1.5em;
-  color: var(--ink-2);
-  font-size: 15px;
-}
-
-.garage-bar {
-  max-width: 1400px;
-  margin: 16px auto 0;
-  display: flex;
-  flex-wrap: wrap;
+.rk-intro p:not(.rk-lead, .project-index) { max-width: 46ch; }
+.rk-card .rk-cue {
+  display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 10px 20px;
-}
-.garage-hint {
-  color: var(--ink-2);
-  font: 700 12px/1.4 var(--font-tron);
-  letter-spacing: 0.12em;
+  gap: 12px;
+  margin-top: 30px;
+  font: 700 11px/1 var(--font-tron);
+  letter-spacing: 0.24em;
   text-transform: uppercase;
 }
-.garage-off {
-  padding: 10px 16px;
-  border: 1px solid rgba(255, 69, 56, 0.55);
-  border-radius: 999px;
-  background: transparent;
-  color: var(--rocket-text);
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: background-color 0.2s;
+.rk-cue::after {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  rotate: 45deg;
+  translate: 0 -3px;
 }
-.garage-off:hover { background: rgba(255, 69, 56, 0.12); }
-.garage-off[hidden] { display: none; }
+.rocket.is-visible .rk-cue::after { animation: cue 1.6s ease-in-out infinite; }
+@keyframes cue { 50% { translate: 0 3px; } }
+
+/* Equipe: cartões no estilo de pilotos, com o número da lista de integrantes */
+.rk-team { align-items: center; }
+.rk-team .rk-team-card { width: min(100%, 720px); }
+.rk-drivers {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin: 22px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.rk-driver {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  background: #0d0d10;
+}
+.rk-driver-photo {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  background:
+    repeating-linear-gradient(-55deg, rgba(232, 21, 11, 0.12) 0 10px, transparent 10px 20px),
+    radial-gradient(90% 70% at 50% 100%, rgba(232, 21, 11, 0.38), transparent 70%),
+    #140506;
+}
+.rk-driver-photo img { width: 100%; height: 100%; object-fit: cover; }
+.rk-driver-photo.is-missing img { display: none; }
+.rk-driver-mono {
+  position: absolute;
+  inset: 0;
+  display: none;
+  place-items: center;
+  color: #fff;
+  font: italic 900 clamp(34px, 4vw, 56px)/1 var(--font-rocket);
+}
+.rk-driver-photo.is-missing .rk-driver-mono { display: grid; }
+.rk-driver-no {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  color: transparent;
+  font: italic 900 32px/1 var(--font-rocket);
+  -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.85);
+}
+.rk-card .rk-driver-name {
+  padding: 10px 12px 12px;
+  border-top: 3px solid var(--rocket);
+  font-size: 13.5px;
+}
+.rk-driver-name b {
+  display: block;
+  color: #fff;
+  font: italic 900 21px/1 var(--font-rocket);
+  text-transform: uppercase;
+}
+.rk-card .rk-callout {
+  margin-top: 22px;
+  color: #fff;
+  font: italic 700 clamp(20px, 2vw, 26px)/1.1 var(--font-rocket);
+  text-transform: uppercase;
+}
+.rk-callout strong { color: var(--rocket-text); }
 
 .credit {
-  max-width: 1400px;
-  margin: 10px auto 0;
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 22px var(--pad) 28px;
   color: var(--muted);
   font-size: 13px;
 }
@@ -943,13 +1651,24 @@ html:not(.js) .garage-poster { display: none; }
 /* =========================================================
    Telas menores
    ========================================================= */
+/* Abaixo disso os 7 cartões ficam estreitos demais numa fila só (o "Rocket SENAI" quebra) */
+@media (max-width: 1220px) {
+  .grid { grid-template-columns: repeat(4, minmax(0, 1fr)); --stagger: 64px; }
+  .driver-photo { aspect-ratio: 1; }
+  .slot-open { display: block; }
+}
+
+@media (max-width: 1100px) {
+  .hero-head { grid-template-columns: minmax(0, 1fr) minmax(0, 380px); }
+}
+
+@media (max-width: 960px) {
+  .hero-head { grid-template-columns: minmax(0, 1fr); }
+}
+
 @media (max-width: 860px) {
-  .hero-inner,
   .project-inner,
   .tron .project-inner { grid-template-columns: minmax(0, 1fr); }
-
-  .hero { padding-bottom: 96px; }
-  .group-photo { max-width: 560px; }
 
   /* No celular a foto vem primeiro e a seta aponta para cima */
   .player { max-width: 320px; }
@@ -958,8 +1677,51 @@ html:not(.js) .garage-poster { display: none; }
   .tron .arrow { rotate: -57deg; }
   .callout { margin-top: 26px; }
   .arrow { width: 72px; }
+}
 
-  .garage { height: 68vh; min-height: 340px; border-radius: 18px; }
+/* Início no celular: uma fila só, em zigue-zague, com os cartões deitados */
+@media (max-width: 760px) {
+  .grid { grid-template-columns: minmax(0, 1fr); gap: 14px; padding-top: 42px; }
+  .slot { width: min(86%, 420px); }
+  .slot:nth-child(even) { margin-top: 0; justify-self: end; }
+  .slot::before { inset: -9px 40% auto 0; height: 2px; border: 0; background: rgba(255, 255, 255, 0.2); }
+  .driver { flex-direction: row; }
+  .driver-photo { flex: none; width: min(34%, 124px); aspect-ratio: 4 / 5; }
+  .driver-info { border-top: 0; border-left: 1px solid rgba(255, 255, 255, 0.06); }
+  .slot-open .driver-info { border-left-style: dashed; }
+  .driver-name span { min-height: 0; }
+}
+
+/* Rocket no celular: texto embaixo, carro em cima, HUD compacto no topo */
+@media (max-width: 760px) {
+  .rk-chapter { align-items: flex-end; padding-bottom: 28px; }
+  .rk-chapter.rk-tall { min-height: 150vh; min-height: 150lvh; }
+  .rk-card { width: 100%; padding: 20px 20px 22px; }
+  .rk-intro { align-items: flex-end; }
+  .rk-shade {
+    background:
+      linear-gradient(0deg, rgba(5, 5, 6, 0.85) 0%, rgba(5, 5, 6, 0.4) 34%, transparent 55%),
+      linear-gradient(180deg, rgba(5, 5, 6, 0.6), transparent 20%);
+  }
+  .rk-panel {
+    top: calc(var(--topbar-h) + 44px);
+    bottom: auto;
+    right: var(--pad);
+  }
+  .rk-axes { gap: 12px; padding: 10px 14px 10px 10px; }
+  .rk-gizmo { width: 76px; height: 76px; }
+  .rk-readout { gap: 5px 12px; font-size: 10px; }
+  .rk-telemetry { min-width: 0; grid-template-columns: auto auto; gap: 2px 14px; padding: 10px 14px; }
+  .rk-map { width: 92px; }
+  .rk-lights { top: auto; bottom: 46%; }
+  .rk-hotspot::before { left: 0; top: -40px; width: 1.5px; height: 30px; rotate: none; }
+  .rk-hotspot-label { left: 0; top: -100px; translate: -50% 0; text-align: center; border-left: 0; border-bottom: 2px solid var(--rocket); }
+  .rk-flash { top: 30%; }
+  .rk-cam { inset: calc(var(--topbar-h) + 44px) 12px 40%; }
+  .rk-cam-id { display: none; }
+  .rk-drivers { gap: 10px; }
+  .rk-driver-no { font-size: 24px; }
+  .rk-driver-name b { font-size: 17px; }
 }
 
 @media (max-width: 560px) {
@@ -967,6 +1729,27 @@ html:not(.js) .garage-poster { display: none; }
   .nav a { padding: 9px 11px; font-size: 12px; }
   .nav .long { display: none; }
   .brawl-title { -webkit-text-stroke-width: 7px; }
+  .eyebrow { gap: 10px; font-size: 10.5px; font-stretch: 100%; letter-spacing: 0.14em; }
+  .standings-list a {
+    grid-template-columns: 44px minmax(0, 1fr);
+    grid-template-areas:
+      "no name"
+      "no meta";
+    column-gap: 14px;
+  }
+  .st-meta {
+    grid-area: meta;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 3px 8px;
+    padding: 7px 0 15px;
+  }
+  .st-type { padding: 0; }
+  .st-who { max-width: none; font-size: 13px; text-align: left; }
+  .st-who::before { content: "· "; color: var(--muted); }
+  .rk-hud-top .rk-tag { display: none; }
+  .rk-hud-top { justify-content: flex-end; }
 }
 
 /* Quem pede menos movimento no sistema não vê animações */
@@ -978,4 +1761,5 @@ html:not(.js) .garage-poster { display: none; }
     transition-duration: 0.01ms !important;
     transition-delay: 0s !important;
   }
+  .start-lights i { animation: none; }
 }

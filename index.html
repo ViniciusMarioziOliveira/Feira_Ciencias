@@ -3,18 +3,28 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Feira de Ciências · SENAI</title>
-  <meta name="description" content="Brawl SENAI, TRON e Rocket SENAI: os projetos do nosso grupo na Feira de Ciências do SENAI.">
+  <title>7D Games · Feira de Ciências SENAI</title>
+  <meta name="description" content="7D Games na Feira de Ciências do SENAI: Brawl SENAI, TRON e Rocket SENAI, os projetos e os integrantes da equipe.">
   <meta name="theme-color" content="#07070b">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2307070b'/%3E%3Cg stroke-width='7' stroke-linecap='round'%3E%3Cpath d='M12 50 22 14' stroke='%23ffd21f'/%3E%3Cpath d='M27 50 37 14' stroke='%232ae8ff'/%3E%3Cpath d='M42 50 52 14' stroke='%23ff4538'/%3E%3C/g%3E%3C/svg%3E">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Orbitron:wght@500;700;900&family=Saira:ital,wght@1,700;1,900&family=Unbounded:wght@500;800;900&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Orbitron:wght@500;700;900&family=Saira:ital,wdth,wght@0,100..125,400..900;1,100..125,400..900&family=Unbounded:wght@500;800;900&display=swap">
   <link rel="stylesheet" href="css/style.css">
 
   <script>document.documentElement.classList.add('js')</script>
+  <!-- three.js fica em js/vendor (o 3D funciona mesmo sem internet na feira) -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "./js/vendor/three/three.module.min.js",
+        "three/addons/": "./js/vendor/three/addons/"
+      }
+    }
+  </script>
   <script src="js/main.js" defer></script>
+  <script type="module" src="js/rocket.js"></script>
 </head>
 <body>
   <a class="skip" href="#brawl">Pular para os projetos</a>
@@ -34,41 +44,167 @@
   </header>
 
   <main>
-    <!-- ================= INÍCIO: foto do grupo + integrantes ================= -->
-    <section class="hero" id="inicio" aria-labelledby="hero-title" data-live>
-      <div class="hero-glow" aria-hidden="true"></div>
-
+    <!-- ================= INÍCIO: a equipe 7D Games, no clima de um grid de largada de F1 ================= -->
+    <section class="hero" id="inicio" aria-labelledby="hero-title">
       <div class="hero-inner">
-        <!-- Foto do grupo: salve como img/grupo.jpg (horizontal, 4:3). Sem a foto, aparecem as iniciais. -->
-        <figure class="group-photo" data-tilt data-reveal>
-          <div class="frame">
-            <img src="img/grupo.jpg" alt="Foto do grupo" width="1600" height="1200" onerror="this.closest('figure').classList.add('is-missing')">
-            <div class="photo-fallback" aria-hidden="true">
-              <span>ES</span><span>JS</span><span>JC</span><span>LF</span><span>PV</span><span>VO</span><span>YC</span>
-            </div>
+        <div class="hero-head">
+          <div class="hero-copy">
+            <p class="eyebrow" data-reveal>
+              <span class="start-lights" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+              Feira de Ciências SENAI · 2026
+            </p>
+            <h1 id="hero-title" data-reveal style="--d: 80ms">7D Games</h1>
+            <p class="lead" data-reveal style="--d: 160ms">Sete integrantes e três projetos: dois jogos e uma corrida imersiva com um carrinho de controle remoto e câmera a bordo. Conheça a equipe e venha jogar e pilotar com a gente.</p>
+            <a class="btn-race" href="#integrantes" data-reveal style="--d: 220ms">Conheça a equipe</a>
           </div>
-          <figcaption>// nosso grupo</figcaption>
-        </figure>
 
-        <div class="hero-copy">
-          <p class="eyebrow" data-reveal>Feira de Ciências · SENAI</p>
-          <h1 id="hero-title" data-reveal style="--d: 80ms">Três projetos.<br><span class="grad">Um só grupo.</span></h1>
-          <p class="lead" data-reveal style="--d: 160ms">Jogue, explore e conheça quem fez.</p>
-
-          <h2 class="members-title" data-reveal style="--d: 220ms">Integrantes</h2>
-          <ul class="members">
-            <li data-reveal style="--d: 260ms"><b>Emannoel</b> Henrique Soares</li>
-            <li data-reveal style="--d: 300ms"><b>Julio</b> Aurelio Souza</li>
-            <li data-reveal style="--d: 340ms"><b>John</b> Cristopher</li>
-            <li data-reveal style="--d: 380ms"><b>Luiz</b> Felipe</li>
-            <li data-reveal style="--d: 420ms"><b>Pedro</b> Henrique Vasconcelos</li>
-            <li data-reveal style="--d: 460ms"><b>Vinícius</b> Mariozi Oliveira</li>
-            <li data-reveal style="--d: 500ms"><b>Yan</b> Matheus Proença Camargo</li>
-          </ul>
+          <!-- Os projetos numa tabela de corrida. Passar o mouse (ou o foco) numa linha destaca quem fez. -->
+          <div class="standings" data-reveal style="--d: 160ms">
+            <p class="standings-label"><span>Projetos</span><span>Quem fez</span></p>
+            <nav aria-label="Projetos">
+              <ol class="standings-list">
+                <li>
+                  <a href="#brawl" data-show="brawl">
+                    <span class="st-no">01</span>
+                    <span class="st-name">Brawl SENAI</span>
+                    <span class="st-meta"><span class="st-type">Jogo</span><span class="st-who">Emannoel</span></span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#tron" data-show="tron">
+                    <span class="st-no">02</span>
+                    <span class="st-name">TRON</span>
+                    <span class="st-meta"><span class="st-type">Jogo</span><span class="st-who">John</span></span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#rocket" data-show="rocket">
+                    <span class="st-no">03</span>
+                    <span class="st-name">Rocket SENAI</span>
+                    <span class="st-meta"><span class="st-type">Corrida imersiva</span><span class="st-who">Julio, Pedro e Vinícius</span></span>
+                  </a>
+                </li>
+              </ol>
+            </nav>
+            <p class="standings-label"><span>Bastidores</span></p>
+            <ul class="crew">
+              <li data-show="site"><b>Website</b> Vinícius</li>
+              <li data-show="banners"><b>Banners</b> Luiz e Yan</li>
+            </ul>
+          </div>
         </div>
-      </div>
 
-      <a class="scroll-cue" href="#brawl">Role para ver os projetos</a>
+        <div class="grid-head" id="integrantes">
+          <div>
+           
+        </div>
+
+        <!-- Fotos: img/<nome>.jpg (vertical, 4:5). Sem a foto, aparece o número.
+             data-project liga a pessoa ao que ela fez: brawl, tron, rocket, site e/ou banners -->
+        <ol class="grid" data-reveal>
+          <li class="slot" data-project="brawl">
+            <div class="driver">
+              <div class="driver-photo">
+                <span class="driver-big" aria-hidden="true">01</span>
+                <img src="img/emannoel.jpg" alt="Foto de Emannoel Henrique Soares" width="800" height="1000" onerror="this.parentElement.classList.add('is-missing')">
+              </div>
+              <div class="driver-info">
+                <p class="driver-code" aria-hidden="true"><b>01</b>EMA</p>
+                <h3 class="driver-name">Emannoel <span>Henrique Soares</span></h3>
+                <p class="driver-role"><span>Brawl SENAI</span></p>
+              </div>
+            </div>
+          </li>
+          <li class="slot" data-project="rocket" style="--d: 60ms">
+            <div class="driver">
+              <div class="driver-photo">
+                <span class="driver-big" aria-hidden="true">02</span>
+                <img src="img/julio.jpg" alt="Foto de Julio Aurélio Souza" width="800" height="1000" onerror="this.parentElement.classList.add('is-missing')">
+              </div>
+              <div class="driver-info">
+                <p class="driver-code" aria-hidden="true"><b>02</b>JUL</p>
+                <h3 class="driver-name">Julio <span>Aurélio Souza</span></h3>
+                <p class="driver-role"><span>Rocket SENAI</span></p>
+              </div>
+            </div>
+          </li>
+          <li class="slot" data-project="tron" style="--d: 120ms">
+            <div class="driver">
+              <div class="driver-photo">
+                <span class="driver-big" aria-hidden="true">03</span>
+                <img src="img/john.jpg" alt="Foto de John Cristopher" width="800" height="1000" onerror="this.parentElement.classList.add('is-missing')">
+              </div>
+              <div class="driver-info">
+                <p class="driver-code" aria-hidden="true"><b>03</b>JOH</p>
+                <h3 class="driver-name">John <span>Cristopher</span></h3>
+                <p class="driver-role"><span>TRON</span></p>
+              </div>
+            </div>
+          </li>
+          <li class="slot" data-project="banners" style="--d: 180ms">
+            <div class="driver">
+              <div class="driver-photo">
+                <span class="driver-big" aria-hidden="true">04</span>
+                <img src="img/luiz.jpg" alt="Foto de Luiz Felipe" width="800" height="1000" onerror="this.parentElement.classList.add('is-missing')">
+              </div>
+              <div class="driver-info">
+                <p class="driver-code" aria-hidden="true"><b>04</b>LUI</p>
+                <h3 class="driver-name">Luiz <span>Felipe</span></h3>
+                <p class="driver-role"><span>Banners</span></p>
+              </div>
+            </div>
+          </li>
+          <li class="slot" data-project="rocket" style="--d: 240ms">
+            <div class="driver">
+              <div class="driver-photo">
+                <span class="driver-big" aria-hidden="true">05</span>
+                <img src="img/pedro.jpg" alt="Foto de Pedro Henrique Vasconcelos" width="800" height="1000" onerror="this.parentElement.classList.add('is-missing')">
+              </div>
+              <div class="driver-info">
+                <p class="driver-code" aria-hidden="true"><b>05</b>PED</p>
+                <h3 class="driver-name">Pedro <span>Henrique Vasconcelos</span></h3>
+                <p class="driver-role"><span>Rocket SENAI</span></p>
+              </div>
+            </div>
+          </li>
+          <li class="slot" data-project="rocket site" style="--d: 300ms">
+            <div class="driver">
+              <div class="driver-photo">
+                <span class="driver-big" aria-hidden="true">06</span>
+                <img src="img/vinicius.jpg" alt="Foto de Vinícius Mariozi Oliveira" width="800" height="1000" onerror="this.parentElement.classList.add('is-missing')">
+              </div>
+              <div class="driver-info">
+                <p class="driver-code" aria-hidden="true"><b>06</b>VIN</p>
+                <h3 class="driver-name">Vinícius <span>Mariozi Oliveira</span></h3>
+                <p class="driver-role"><span>Rocket SENAI</span><span>Website</span></p>
+              </div>
+            </div>
+          </li>
+          <li class="slot" data-project="banners" style="--d: 360ms">
+            <div class="driver">
+              <div class="driver-photo">
+                <span class="driver-big" aria-hidden="true">07</span>
+                <img src="img/yan.jpg" alt="Foto de Yan Matheus Proença Camargo" width="800" height="1000" onerror="this.parentElement.classList.add('is-missing')">
+              </div>
+              <div class="driver-info">
+                <p class="driver-code" aria-hidden="true"><b>07</b>YAN</p>
+                <h3 class="driver-name">Yan <span>Matheus Proença Camargo</span></h3>
+                <p class="driver-role"><span>Banners</span></p>
+              </div>
+            </div>
+          </li>
+          <!-- Vaga livre: só aparece quando o grid quebra em mais de uma fila -->
+          <li class="slot slot-open" aria-hidden="true" style="--d: 420ms">
+            <div class="driver">
+              <div class="driver-photo"><span class="driver-big">08</span></div>
+              <div class="driver-info">
+                <p class="driver-code"><b>08</b>VOCÊ</p>
+                <p class="driver-name">Sua vez <span>Venha jogar e pilotar com a gente</span></p>
+              </div>
+            </div>
+          </li>
+        </ol>
+      </div>
     </section>
 
     <div class="divider" aria-hidden="true"><span>//</span></div>
@@ -131,47 +267,175 @@
       </div>
     </section>
 
-    <!-- ================= PROJETO 03: ROCKET SENAI (modelo 3D) ================= -->
+    <!-- ================= PROJETO 03: ROCKET SENAI (3D guiado pela rolagem, em js/rocket.js) ================= -->
     <section class="rocket" id="rocket" aria-labelledby="rocket-title" data-live>
-      <div class="rocket-head">
-        <div>
-          <p class="project-index" data-reveal>Projeto 03</p>
-          <h2 class="rocket-title" id="rocket-title" data-reveal>Rocket <span class="badge">SENAI</span></h2>
-        </div>
-        <p class="rocket-sub" data-reveal style="--d: 120ms">Modelo 3D imersivo do carrinho <strong>Ferrari SF-25</strong>.</p>
-      </div>
+      <a class="skip rk-skip" href="#rocket-equipe">Pular a animação 3D</a>
 
-      <!-- O iframe do Sketchfab só é criado pelo js/main.js quando alguém clica em "Ligar o motor" -->
-      <div class="garage" data-model="7929bd7771d8494eaf0eb31404e24bf6" data-state="idle">
-        <p class="garage-bigtext" aria-hidden="true">SF-25</p>
-        <div class="garage-stage">
-          <noscript>
-            <iframe title="F1 2025 Ferrari SF-25" src="https://sketchfab.com/models/7929bd7771d8494eaf0eb31404e24bf6/embed?ui_theme=dark&amp;dnt=1" allow="autoplay; fullscreen; xr-spatial-tracking" allowfullscreen></iframe>
-          </noscript>
-        </div>
-        <div class="garage-poster">
-          <div class="lights" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
-          <button class="ignition" type="button" data-action="start">Ligar<br>o motor</button>
-          <p class="garage-status" role="status" aria-live="polite">Clique para carregar o modelo 3D</p>
-        </div>
-      </div>
+      <div class="rk-scrolly">
+        <!-- Palco fixo: o canvas 3D e o painel (HUD). É decorativo; todo o conteúdo está nos capítulos. -->
+        <div class="rk-stage">
+          <canvas class="rk-canvas" aria-hidden="true"></canvas>
+          <div class="rk-shade" aria-hidden="true"></div>
 
-      <div class="garage-bar">
-        <p class="garage-hint">Arraste para girar · Role para dar zoom · Clique duplo para focar</p>
-        <button class="garage-off" type="button" data-action="stop" hidden>Desligar 3D</button>
+          <div class="rk-hud" aria-hidden="true">
+            <div class="rk-hud-top">
+              <p class="rk-tag"><i></i>Rocket SENAI · SF-26</p>
+              <p class="rk-count"><b data-hud="chapter">00</b> / 06</p>
+            </div>
+
+            <div class="rk-panel rk-axes" data-panel="axes">
+              <svg class="rk-gizmo" viewBox="-60 -60 120 120">
+                <circle r="52" class="rk-gizmo-ring"/>
+                <line class="ax-z" x2="0" y2="0" data-axis="z"/>
+                <line class="ax-x" x2="0" y2="0" data-axis="x"/>
+                <line class="ax-y" x2="0" y2="0" data-axis="y"/>
+                <text class="ax-z" data-label="z">Z</text>
+                <text class="ax-x" data-label="x">X</text>
+                <text class="ax-y" data-label="y">Y</text>
+              </svg>
+              <dl class="rk-readout">
+                <div class="ax-x"><dt>Rot. X</dt><dd data-hud="rx">0,0°</dd></div>
+                <div class="ax-y"><dt>Rot. Y</dt><dd data-hud="ry">0,0°</dd></div>
+                <div class="ax-z"><dt>Rot. Z</dt><dd data-hud="rz">0,0°</dd></div>
+                <div><dt>Altura</dt><dd data-hud="lift">0,00 m</dd></div>
+                <div><dt>Rodas</dt><dd data-hud="explode">0 cm</dd></div>
+              </dl>
+            </div>
+
+            <div class="rk-hotspot" data-panel="hotspot">
+              <span class="rk-hotspot-dot"></span>
+              <span class="rk-hotspot-label"><b>ESP32-CAM</b>olhos do piloto</span>
+            </div>
+
+            <div class="rk-lights" data-panel="lights"><i></i><i></i><i></i><i></i><i></i></div>
+            <p class="rk-flash">Luzes apagadas!</p>
+
+            <div class="rk-panel rk-telemetry" data-panel="race">
+              <svg class="rk-map" viewBox="0 0 200 110">
+                <path class="rk-map-track" d=""/>
+                <circle class="rk-map-start" r="3"/>
+                <circle class="rk-map-car" r="4.5"/>
+              </svg>
+              <div class="rk-speed"><b data-hud="speed">0</b><span>km/h</span></div>
+              <div class="rk-gear"><span>Marcha</span><b data-hud="gear">N</b></div>
+              <div class="rk-rpm"><i data-hud="rpm"></i></div>
+              <div class="rk-lap"><span>Volta <b data-hud="lap">1</b></span><span data-hud="laptime">0:00.000</span></div>
+            </div>
+
+            <div class="rk-cam" data-panel="cam">
+              <span class="rk-cam-rec">REC</span>
+              <span class="rk-cam-id">ESP32-CAM · câmera de bordo</span>
+              <span class="rk-cam-clock" data-hud="clock">00:00:00</span>
+              <span class="rk-cam-cross"></span>
+            </div>
+          </div>
+
+          <div class="rk-loader">
+            <div class="lights" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+            <p class="rk-loader-status">Aquecendo os pneus…</p>
+            <button class="rk-load" type="button" hidden>Carregar o 3D</button>
+          </div>
+          <div class="rk-fade" aria-hidden="true"></div>
+        </div>
+
+        <!-- Capítulos: rolam por cima do palco. O centro de cada capítulo no meio da tela = um "quadro" da animação. -->
+        <div class="rk-chapters">
+          <article class="rk-chapter rk-intro">
+            <div class="rk-card">
+              <p class="project-index" data-reveal>Projeto 03</p>
+              <h2 class="rocket-title" id="rocket-title" data-reveal style="--d: 80ms">Rocket <span class="badge">SENAI</span></h2>
+              <p class="rk-lead" data-reveal style="--d: 160ms">Uma corrida que você pilota de dentro do carro.</p>
+              <p data-reveal style="--d: 220ms">Uma miniatura de Fórmula 1 controlada à distância, com uma câmera <strong>ESP32-CAM</strong> a bordo levando você para o cockpit.</p>
+              <p class="rk-cue" data-reveal style="--d: 300ms">Role para ligar o motor</p>
+            </div>
+          </article>
+
+          <article class="rk-chapter">
+            <div class="rk-card" data-reveal>
+              <p class="rk-kicker">01 · O carro</p>
+              <h3>A SF-26, em miniatura</h3>
+              <p>O modelo que você vê é a Ferrari SF-26, da temporada 2026 da Fórmula 1. Na nossa bancada, o mesmo carro existe de verdade: uma <strong>miniatura controlada remotamente</strong>.</p>
+            </div>
+          </article>
+
+          <article class="rk-chapter rk-tall">
+            <div class="rk-card" data-reveal>
+              <p class="rk-kicker">02 · Em três eixos</p>
+              <h3>Gire, incline, desmonte</h3>
+              <p>Continue rolando: o carro sobe no eixo <b class="ax-y">Y</b>, gira, inclina nos eixos <b class="ax-x">X</b> e <b class="ax-z">Z</b> e as rodas se afastam para mostrar como tudo se encaixa.</p>
+            </div>
+          </article>
+
+          <article class="rk-chapter">
+            <div class="rk-card" data-reveal>
+              <p class="rk-kicker">03 · ESP32-CAM</p>
+              <h3>Uma câmera no lugar do piloto</h3>
+              <p>A ESP32-CAM é uma plaquinha com câmera e Wi-Fi. Ela vai a bordo, na posição dos olhos do piloto, e transmite em tempo real o que o carrinho está vendo.</p>
+            </div>
+          </article>
+
+          <article class="rk-chapter rk-tall">
+            <div class="rk-card" data-reveal>
+              <p class="rk-kicker">04 · Simulação de corrida</p>
+              <h3>Cinco luzes. Largada!</h3>
+              <p>Na simulação de corrida imersiva, você pilota o carrinho à distância guiado pela imagem da câmera de bordo, do jeito que um piloto enxerga a pista.</p>
+            </div>
+          </article>
+
+          <article class="rk-chapter rk-tall">
+            <div class="rk-card" data-reveal>
+              <p class="rk-kicker">05 · Visão do piloto</p>
+              <h3>Agora é você no cockpit</h3>
+              <p>É assim que a ESP32-CAM leva você para dentro do carro: a pista na altura dos olhos do piloto, como se você estivesse sentado nele.</p>
+            </div>
+          </article>
+
+          <article class="rk-chapter rk-team" id="rocket-equipe" aria-labelledby="rocket-team-title">
+            <div class="rk-card rk-team-card">
+              <p class="rk-kicker" data-reveal>06 · Equipe</p>
+              <h3 id="rocket-team-title" data-reveal style="--d: 60ms">A equipe nos boxes</h3>
+              <ul class="rk-drivers">
+                <li class="rk-driver" data-reveal style="--d: 120ms">
+                  <div class="rk-driver-photo">
+                    <img src="img/julio.jpg" alt="Foto de Julio Aurélio" width="800" height="1000" loading="lazy" onerror="this.parentElement.classList.add('is-missing')">
+                    <span class="rk-driver-mono" aria-hidden="true">JA</span>
+                  </div>
+                  <span class="rk-driver-no" aria-hidden="true">02</span>
+                  <p class="rk-driver-name"><b>Julio</b> Aurélio</p>
+                </li>
+                <li class="rk-driver" data-reveal style="--d: 200ms">
+                  <div class="rk-driver-photo">
+                    <img src="img/pedro.jpg" alt="Foto de Pedro Vasconcelos" width="800" height="1000" loading="lazy" onerror="this.parentElement.classList.add('is-missing')">
+                    <span class="rk-driver-mono" aria-hidden="true">PV</span>
+                  </div>
+                  <span class="rk-driver-no" aria-hidden="true">05</span>
+                  <p class="rk-driver-name"><b>Pedro</b> Vasconcelos</p>
+                </li>
+                <li class="rk-driver" data-reveal style="--d: 280ms">
+                  <div class="rk-driver-photo">
+                    <img src="img/vinicius.jpg" alt="Foto de Vinícius Mariozi" width="800" height="1000" loading="lazy" onerror="this.parentElement.classList.add('is-missing')">
+                    <span class="rk-driver-mono" aria-hidden="true">VM</span>
+                  </div>
+                  <span class="rk-driver-no" aria-hidden="true">06</span>
+                  <p class="rk-driver-name"><b>Vinícius</b> Mariozi</p>
+                </li>
+              </ul>
+              <p class="rk-callout" data-reveal style="--d: 340ms">Quer pilotar? <strong>Procure a equipe!</strong></p>
+            </div>
+          </article>
+        </div>
       </div>
 
       <p class="credit">
         Modelo 3D:
-        <a href="https://sketchfab.com/3d-models/f1-2025-ferrari-sf-25-7929bd7771d8494eaf0eb31404e24bf6" target="_blank" rel="nofollow noopener">F1 2025 Ferrari SF-25</a>
-        por <a href="https://sketchfab.com/excalibur" target="_blank" rel="nofollow noopener">Excalibur</a>
-        no <a href="https://sketchfab.com" target="_blank" rel="nofollow noopener">Sketchfab</a>
+        <a href="https://sketchfab.com/3d-models/2026-ferrari-sf-26-e5ca6cecdc42449283f4bed27360f2a7" target="_blank" rel="nofollow noopener">2026 Ferrari SF-26</a>
+        por <a href="https://sketchfab.com/Tyler_Dave" target="_blank" rel="nofollow noopener">Dave Love</a>
       </p>
     </section>
   </main>
 
   <footer class="footer">
-    <p>Feira de Ciências · SENAI · 2026</p>
+    <p>7D Games · Feira de Ciências · SENAI · 2026</p>
     <a href="#inicio">Voltar ao topo ↑</a>
   </footer>
 </body>

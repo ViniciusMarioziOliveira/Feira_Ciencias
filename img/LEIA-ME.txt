@@ -1,10 +1,33 @@
-Coloque aqui as fotos usadas na landing page, com estes nomes:
+Coloque aqui as fotos dos integrantes da 7D Games, com estes nomes
+(de preferência verticais, 4:5):
 
-  grupo.jpg     -> foto do grupo, no topo da página (de preferência horizontal, 4:3)
-  emannoel.jpg  -> foto de Emannoel, seção Brawl SENAI (de preferência vertical, 4:5)
-  john.jpg      -> foto de John, seção TRON (de preferência vertical, 4:5)
+  emannoel.jpg  -> Emannoel (também aparece na seção Brawl SENAI)
+  julio.jpg     -> Julio (também aparece na equipe do Rocket SENAI)
+  john.jpg      -> John (também aparece na seção TRON)
+  luiz.jpg      -> Luiz
+  pedro.jpg     -> Pedro (também aparece na equipe do Rocket SENAI)
+  vinicius.jpg  -> Vinícius (também aparece na equipe do Rocket SENAI)
+  yan.jpg       -> Yan
 
-Enquanto uma foto não existir, a página mostra as iniciais no lugar dela.
+Enquanto uma foto não existir, a página mostra o número da pessoa no grid de
+largada (o início da página) e as iniciais nas seções dos projetos.
 
-Dica: fotos muito grandes deixam a página lenta. Uns 1600 px de largura
-para a foto do grupo e 900 px para as individuais já ficam ótimos.
+Dica: fotos muito grandes deixam a página lenta. Uns 900 px de largura já
+ficam ótimos. No grid, o rosto deve ficar no terço de cima da foto.
+
+O que cada integrante fez: no index.html, cada cartão do grid de largada tem
+data-project com um ou mais destes valores, separados por espaço:
+  brawl, tron, rocket, site (website) e banners
+Ex.: data-project="rocket site". Isso define quem acende quando alguém passa
+o mouse sobre um projeto (ou sobre "Website" e "Banners", nos bastidores).
+O texto que aparece no cartão fica logo abaixo, em <p class="driver-role">.
+
+Modelo 3D (pasta 3d_model):
+  2026_ferrari_sf-26.glb -> arquivo original do Sketchfab (19 MB), não é usado pelo site
+  sf-26-web.glb          -> versão otimizada que o site carrega (9,6 MB): texturas em WebP,
+                            rodas separadas para girar e esterçar
+rocket-poster.webp -> imagem do carro mostrada enquanto o 3D carrega
+
+O 3D precisa que o site seja aberto por um servidor (por exemplo, a extensão
+Live Server do VS Code, ou o site publicado). Abrindo o index.html direto do
+arquivo, o navegador bloqueia o carregamento do modelo.
