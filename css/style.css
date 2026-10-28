@@ -581,7 +581,7 @@ h1, h2, h3, p, figure, dl, dd { margin: 0; }
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: 50% 30%;
+  object-position: 50% 5%; /* nos cartões quadrados (tablet), corta embaixo e não a cabeça */
 }
 .driver-photo.is-missing img { display: none; }
 /* Número gigante vazado: fica atrás da foto e aparece enquanto ela não existe */
@@ -1296,6 +1296,11 @@ h1, h2, h3, p, figure, dl, dd { margin: 0; }
   stroke: #fff;
   stroke-width: 1.5;
 }
+.rk-map-rival {
+  fill: #c9ced8;
+  stroke: #0b0b0e;
+  stroke-width: 1.5;
+}
 .rk-speed { grid-area: speed; justify-self: end; display: flex; align-items: baseline; gap: 8px; }
 .rk-speed b {
   font: italic 900 clamp(40px, 4vw, 56px)/0.9 var(--font-rocket);
@@ -1384,7 +1389,7 @@ h1, h2, h3, p, figure, dl, dd { margin: 0; }
   background: #ff2318;
   box-shadow: 0 0 10px #ff2318;
 }
-.rocket.is-visible .rk-cam.is-on .rk-cam-rec::before { animation: rec 1s steps(1) infinite; }
+.rocket.is-visible :is(.rk-cam, .rk-pip).is-on .rk-cam-rec::before { animation: rec 1s steps(1) infinite; }
 @keyframes rec { 50% { opacity: 0; } }
 .rk-cam-id { top: 16px; right: 18px; }
 .rk-cam-clock { bottom: 14px; left: 18px; font-variant-numeric: tabular-nums; }
@@ -1400,6 +1405,38 @@ h1, h2, h3, p, figure, dl, dd { margin: 0; }
     linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7)) 0 50% / 9px 1.5px no-repeat,
     linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7)) 100% 50% / 9px 1.5px no-repeat;
 }
+
+/* Câmera do Mini num quadro menor: o JS lê a posição e o tamanho daqui e desenha a imagem 3D dentro */
+.rk-pip {
+  position: absolute;
+  top: calc(var(--topbar-h) + 100px);
+  right: calc(var(--pad) + 18px);
+  width: clamp(240px, 27vw, 400px);
+  aspect-ratio: 16 / 10;
+  border: 2px solid rgba(255, 255, 255, 0.92);
+  border-radius: 4px;
+  box-shadow: 0 24px 50px -20px #000;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+/* "Sintonizando": a imagem aparece logo depois da moldura */
+.rk-pip::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #000;
+  opacity: 0;
+}
+.rk-pip.is-on::before { animation: tune 0.5s ease-out both; }
+@keyframes tune {
+  0%, 30% { opacity: 1; }
+  100% { opacity: 0; }
+}
+.rk-pip > span { position: absolute; }
+.rk-pip .rk-cam-rec { top: 9px; left: 11px; }
+.rk-pip-id { bottom: 8px; left: 11px; }
 
 /* ---------- Carregamento: as 5 luzes acendem conforme o modelo baixa ---------- */
 .rk-loader {
@@ -1585,7 +1622,7 @@ html:not(.js) .rk-loader { display: none; }
     radial-gradient(90% 70% at 50% 100%, rgba(232, 21, 11, 0.38), transparent 70%),
     #140506;
 }
-.rk-driver-photo img { width: 100%; height: 100%; object-fit: cover; }
+.rk-driver-photo img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 6%; } /* fotos altas: o rosto fica no alto */
 .rk-driver-photo.is-missing img { display: none; }
 .rk-driver-mono {
   position: absolute;
@@ -1598,8 +1635,8 @@ html:not(.js) .rk-loader { display: none; }
 .rk-driver-photo.is-missing .rk-driver-mono { display: grid; }
 .rk-driver-no {
   position: absolute;
-  top: 8px;
   right: 10px;
+  bottom: 6px; /* embaixo, sobre o terno escuro */
   color: transparent;
   font: italic 900 32px/1 var(--font-rocket);
   -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.85);
@@ -1719,6 +1756,8 @@ html:not(.js) .rk-loader { display: none; }
   .rk-flash { top: 30%; }
   .rk-cam { inset: calc(var(--topbar-h) + 44px) 12px 40%; }
   .rk-cam-id { display: none; }
+  .rk-pip { top: auto; bottom: calc(40% + 14px); right: 26px; width: 46vw; }
+  .rk-pip-long { display: none; }
   .rk-drivers { gap: 10px; }
   .rk-driver-no { font-size: 24px; }
   .rk-driver-name b { font-size: 17px; }

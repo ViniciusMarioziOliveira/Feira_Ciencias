@@ -3,7 +3,8 @@
    - O modelo (img/3d_model/sf-26-web.glb) só é baixado quando a seção se aproxima.
    - A rolagem vira um "tempo" t medido em capítulos: t = 2 quando o centro do capítulo 2
      passa pelo meio da tela. Câmera, carro, luzes e HUD são funções de t (tabelas abaixo).
-   - Da largada em diante o carro corre sozinho pela pista; a rolagem só escolhe a câmera.
+   - Da largada em diante a SF-26 e o Mini Cooper correm sozinhos pela pista; a rolagem só escolhe a câmera.
+   - O Mini (img/3d_model/mini-cooper-web.glb) é baixado depois da SF-26 e só aparece quando a pista surge.
    - Só desenha quando algo muda e o palco está na tela: parado, a placa de vídeo descansa.
    ========================================================= */
 import * as THREE from 'three';
@@ -11,7 +12,8 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
 const MODEL_URL = 'img/3d_model/sf-26-web.glb';
-const MODEL_SIZE = '9,6 MB';
+const MINI_URL = 'img/3d_model/mini-cooper-web.glb';
+const MODEL_SIZE = '10,9 MB'; // os dois carros
 
 /* ---------- Pista: pontos de controle (m) de uma curva Catmull-Rom fechada ---------- */
 // Reta principal (o grid fica em s = 0), hairpin, "esses", curva longa, reta oposta, chicane e curva final.
@@ -30,6 +32,11 @@ const A_ACC = 11;
 const A_BRAKE = 38;
 const LIGHT_STEP = 0.6;    // segundos entre cada luz de largada
 const GEARS = [0, 22, 33, 44, 55, 65, 75, 84, 93]; // velocidade máxima de cada marcha (m/s)
+// Dois carros, cada um numa metade da pista: SF-26 à esquerda, Mini Cooper à direita
+const LANE = 2;            // distância do meio da pista até o centro de cada carro (m)
+const MINI_GRID = -1.2;    // o Mini larga ao lado da SF-26, um pouco atrás
+const DUEL_GAP = 7;        // na corrida o Mini fica até 7 m à frente ou atrás...
+const DUEL_WAVE = 600;     // ...e as posições se invertem a cada ~300 m
 
 /* ---------- Linha do tempo (t em capítulos) ---------- */
 // Câmera: órbita em volta de um alvo preso ao carro (x = esquerda, y = cima, z = frente do carro).
@@ -40,13 +47,13 @@ const SHOTS = [
   [1.45, 122, 10, 11.6, 0, 0.95, 0.3, 30, 0.24, 0.16],
   [2.00, 150, 16, 11.6, 0, 1.15, 0.3, 30, 0.24, 0.16],     // eixos X, Y e Z
   [2.55, 172, 14, 10.8, 0, 1.0, 0.3, 30, 0.24, 0.16],
-  [3.00, 206, 34, 4.6, 0, 0.9, 0.15, 36, 0.22, 0.12],      // ESP32-CAM de perto
-  [3.60, 180, 2, 13.5, 0, 2.6, 7.5, 40, 0, 0.08],          // atrás do carro no grid, olhando as luzes
-  [4.00, 180, 9, 9.6, 0, 0.95, 3.5, 42, 0, 0.08],          // perseguição
-  [4.50, 180, 9, 9.6, 0, 0.95, 3.5, 42, 0, 0.08],
-  [5.00, 180, 0.38, 30, 0, 0.66, 30.12, 68, 0, 0],         // visão do piloto (olhos em 0,86 m, por baixo do halo)
-  [5.45, 180, 0.38, 30, 0, 0.66, 30.12, 68, 0, 0],
-  [6.00, 150, 38, 19, 0, 0, 2, 36, 0.24, 0.14],            // helicóptero
+  [3.00, 206, 30, 5.4, 0, 1.15, -0.05, 36, 0.22, 0.12],    // ESP32-CAM de perto, em cima do carro
+  [3.60, 180, 8, 17, -2, 1.4, 4, 40, 0.2, 0.08],           // atrás dos dois carros no grid, com as luzes no alto
+  [4.00, 180, 11, 13, -1.8, 1, 2, 42, 0.2, 0.08],          // perseguição: os dois lado a lado
+  [4.50, 180, 11, 13, -1.8, 1, 2, 42, 0.2, 0.08],
+  [5.00, 180, 3.5, 30, 0, -0.51, 29.84, 66, 0, 0],         // câmera em cima do carro: ESP32-CAM no alto, a 1,32 m
+  [5.45, 180, 3.5, 30, 0, -0.51, 29.84, 66, 0, 0],
+  [6.00, 158, 46, 25, -2, 0, 0, 36, 0.5, 0.2],             // helicóptero, com os dois carros à direita do texto
 ];
 // O carro no "estúdio": sobe (Y), gira (Y), inclina (X e Z) e as rodas se afastam
 const LIFT = keys([[1.25, 0], [1.65, 0.85], [2.45, 0.85], [2.85, 0]]);
@@ -55,12 +62,13 @@ const PITCH = keys([[1.55, 0], [1.8, -14], [2.05, 6], [2.3, 0]]);
 const ROLL = keys([[1.65, 0], [1.9, 12], [2.15, -14], [2.4, 0]]);
 const EXPLODE = keys([[2.0, 0], [2.2, 1], [2.45, 1], [2.65, 0]]);
 const TRACK_MIX = keys([[3.2, 0], [3.65, 1]]);   // estúdio escuro → pista à noite
+const MINI_IN = keys([[3.1, -46], [3.62, 0]]);   // o Mini chega por trás e para no grid ao lado da SF-26
 const POV = keys([[4.55, 0], [4.98, 1], [5.47, 1], [5.9, 0]]);
 const LIGHTS_AT = 3.68;    // a partir daqui as luzes acendem
-const RESET_BELOW = 3.35;  // voltando para antes disto, o carro volta ao grid
+const RESET_BELOW = 3.35;  // voltando para antes disto, os carros voltam ao grid
 
 const PIVOT = new THREE.Vector3(0, 0.55, 0.27); // centro do carro (giros do "estúdio")
-const CAM_SPOT = new THREE.Vector3(0, 0.86, 0.12); // onde a ESP32-CAM fica: olhos do piloto (= câmera da visão do piloto)
+const CAM_SPOT = new THREE.Vector3(0, 1.27, -0.1); // onde a ESP32-CAM fica: no alto da SF-26, atrás da cabeça do piloto
 const ESTUDIO = new THREE.Color(0x050506);
 const NOITE = new THREE.Color(0x0a0d16);
 
@@ -153,7 +161,18 @@ function buildTrack() {
     for (let k = 1; k <= n; k++) speed[at(k)] = Math.min(speed[at(k)], Math.sqrt(speed[at(k - 1)] ** 2 + 2 * A_ACC * ds));
     for (let k = n; k >= 1; k--) speed[at(k - 1)] = Math.min(speed[at(k - 1)], Math.sqrt(speed[at(k)] ** 2 + 2 * A_BRAKE * ds));
   }
-  return { length, n, ds, x, z, heading, curv, speed };
+  // Traçado: perto das curvas os carros puxam para o lado de dentro (os dois juntos, sem mudar a distância entre eles)
+  const apex = new Float32Array(n);
+  const reach = 45;
+  const weights = [];
+  for (let k = -reach; k <= reach; k++) weights.push(Math.exp(-((k * ds) ** 2) / (2 * 18 ** 2)));
+  const total = weights.reduce((a, b) => a + b, 0);
+  for (let i = 0; i < n; i++) {
+    let sum = 0;
+    for (let k = -reach; k <= reach; k++) sum += curv[at(i + k)] * weights[k + reach];
+    apex[i] = clamp((sum / total) * 55, -2, 2);
+  }
+  return { length, n, ds, x, z, heading, curv, speed, apex };
 }
 
 function sampleTrack(track, s, out) {
@@ -166,6 +185,18 @@ function sampleTrack(track, s, out) {
   out.heading = track.heading[i] + wrapAngle(track.heading[j] - track.heading[i]) * f;
   out.curv = lerp(track.curv[i], track.curv[j], f);
   out.speed = lerp(track.speed[i], track.speed[j], f);
+  out.apex = lerp(track.apex[i], track.apex[j], f);
+  out.apexSlope = (track.apex[j] - track.apex[i]) / track.ds;
+  return out;
+}
+
+// Um carro na sua faixa: linha central + faixa (positivo = esquerda) + o traçado das curvas
+function carPose(track, s, lane, out) {
+  sampleTrack(track, s, out);
+  const lateral = lane + out.apex;
+  out.x += Math.cos(out.heading) * lateral;
+  out.z -= Math.sin(out.heading) * lateral;
+  out.heading += Math.atan(out.apexSlope);
   return out;
 }
 
@@ -380,15 +411,17 @@ function buildCircuit(track, tex) {
 
   group.add(road, apron, edge, kerb, ground, ...barriers);
 
-  // Linha de largada quadriculada e a marcação do box do carro no grid
+  // Linha de largada quadriculada e as marcações dos dois boxes no grid (SF-26 à esquerda, Mini à direita)
   const line = new THREE.Mesh(new THREE.PlaneGeometry(ROAD, 1.2), decal({ map: tex.checker }));
   line.geometry.rotateX(-Math.PI / 2);
   group.add(placeOnTrack(track, line, START_LINE, 0, 0.008));
   const paint = decal({ color: 0x9a9aa0 });
-  for (const [s, lateral, w, l] of [[2.75, 0, 2.4, 0.14], [2.2, 1.13, 0.12, 1.2], [2.2, -1.13, 0.12, 1.2]]) {
-    const mark = new THREE.Mesh(new THREE.PlaneGeometry(w, l), paint);
-    mark.geometry.rotateX(-Math.PI / 2);
-    group.add(placeOnTrack(track, mark, s, lateral, 0.008));
+  for (const [s0, lane, front] of [[0, LANE, 2.75], [MINI_GRID, -LANE, 2.15]]) {
+    for (const [ds, lateral, w, l] of [[front, 0, 2.4, 0.14], [front - 0.55, 1.13, 0.12, 1.2], [front - 0.55, -1.13, 0.12, 1.2]]) {
+      const mark = new THREE.Mesh(new THREE.PlaneGeometry(w, l), paint);
+      mark.geometry.rotateX(-Math.PI / 2);
+      group.add(placeOnTrack(track, mark, s0 + ds, lane + lateral, 0.008));
+    }
   }
 
   // Postes de luz (instanciados) com o brilho das lâmpadas em pontos
@@ -480,14 +513,13 @@ function buildSky() {
 }
 
 /* ---------- Sombra de contato: desenhada uma vez, olhando o carro de baixo para cima ---------- */
-function bakeContactShadow(renderer, model) {
-  const W = 3.6;
-  const L = 7.6;
+// width x length (m) é a área do chão coberta, centrada em centerZ (no sentido do comprimento do carro)
+function bakeContactShadow(renderer, model, { width: W, length: L, centerZ }) {
   const H = 0.9;
   const size = [192, 384];
   const targets = [0, 1].map(() => new THREE.WebGLRenderTarget(size[0], size[1]));
   const camera = new THREE.OrthographicCamera(-W / 2, W / 2, L / 2, -L / 2, 0, H + 0.02);
-  camera.position.set(0, -0.02, PIVOT.z); // um pouco abaixo do chão para não cortar os pneus
+  camera.position.set(0, -0.02, centerZ); // um pouco abaixo do chão para não cortar os pneus
   camera.rotation.x = Math.PI / 2; // olha para cima; o "alto" da imagem é a frente do carro
   camera.updateMatrixWorld();
 
@@ -547,7 +579,7 @@ function bakeContactShadow(renderer, model) {
   const shadow = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({
     map: targets[0].texture, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -8,
   }));
-  shadow.position.set(0, 0.015, PIVOT.z);
+  shadow.position.set(0, 0.015, centerZ);
   shadow.renderOrder = 1;
   return shadow;
 }
@@ -579,7 +611,7 @@ function boot() {
   };
 
   if (navigator.connection && navigator.connection.saveData) {
-    status.textContent = `Economia de dados ativada: o modelo 3D tem ${MODEL_SIZE}.`;
+    status.textContent = `Economia de dados ativada: os carros em 3D têm ${MODEL_SIZE}.`;
     loadButton.textContent = `Carregar o 3D (${MODEL_SIZE})`;
     loadButton.hidden = false;
     loadButton.addEventListener('click', begin);
@@ -639,10 +671,10 @@ function run({ status, loaderLights }) {
   const circuit = buildCircuit(track, textures);
   scene.add(circuit.group);
 
-  // O spot de "estúdio" fica parado em cima do grid
-  const grid = sampleTrack(track, 0, {});
-  placeOnTrack(track, key, 0, -3.5, 10);
-  placeOnTrack(track, key.target, 0.6, 0, 0.4);
+  // O spot de "estúdio" fica parado em cima do box da SF-26
+  const grid = carPose(track, 0, LANE, {});
+  placeOnTrack(track, key, 0, LANE - 3.5, 10);
+  placeOnTrack(track, key.target, 0.6, LANE, 0.4);
 
   /* ---------- Carro: trilho na pista → giros do "estúdio" → modelo ---------- */
   const carFrame = new THREE.Group();   // posição e direção na pista
@@ -664,6 +696,36 @@ function run({ status, loaderLights }) {
   let shadow = null;
   const carMaterials = [];
 
+  /* ---------- Mini Cooper: trilho na pista → inclinação da carroceria → modelo ---------- */
+  // A câmera dele (ESP32-CAM no teto) vai presa na carroceria e aparece num quadro menor na "visão da câmera"
+  const mini = {
+    frame: new THREE.Group(),
+    tilt: new THREE.Group(),
+    holder: new THREE.Group(),
+    cam: new THREE.PerspectiveCamera(58, 1.6, 0.04, 2600),
+    wheels: [],
+    radius: 0.31,
+    wheelbase: 2.5,
+    s: MINI_GRID + MINI_IN(0),
+    v: 0,
+    accel: 0,
+    spin: 0,
+    steer: 0,
+    pitch: 0,
+    roll: 0,
+    pose: {},
+    ready: false,
+  };
+  mini.tilt.rotation.order = 'YXZ';
+  mini.tilt.position.y = 0.45; // gira em volta de um ponto na altura do meio do carro
+  mini.holder.position.y = -0.45;
+  mini.cam.rotation.order = 'YXZ';
+  mini.cam.rotation.set(-6 * DEG, Math.PI, 0); // olha para a frente do carro, um pouco para baixo
+  mini.tilt.add(mini.holder, mini.cam);
+  mini.frame.add(mini.tilt);
+  mini.frame.visible = false;
+  scene.add(mini.frame);
+
   /* ---------- HUD ---------- */
   const hud = {};
   stage.querySelectorAll('[data-hud]').forEach((el) => { hud[el.dataset.hud] = el; });
@@ -680,6 +742,7 @@ function run({ status, loaderLights }) {
     tz: stage.querySelector('.rk-gizmo text[data-label="z"]'),
   };
   const mapCar = stage.querySelector('.rk-map-car');
+  const mapRival = stage.querySelector('.rk-map-rival');
   const toMap = buildMinimap(track, stage.querySelector('.rk-map-track'), stage.querySelector('.rk-map-start'));
   const written = new Map();
   const write = (el, value) => {
@@ -708,6 +771,8 @@ function run({ status, loaderLights }) {
   let cutting = false;
   let shownLights = -1;
   let lastMix = -1;
+  const view = { w: 1, h: 1 };
+  const pip = { x: 0, y: 0, w: 0, h: 0, on: false }; // quadro da câmera do Mini, em px a partir do canto de baixo
   const pointer = { x: 0, y: 0, tx: 0, ty: 0 };
   const here = {};
   const shot = [];
@@ -790,6 +855,34 @@ function run({ status, loaderLights }) {
     }
   };
 
+  /* ---------- Mini Cooper: chega ao grid com a pista e, na corrida, disputa posição com a SF-26 ---------- */
+  const updateMini = (dt) => {
+    if (!mini.ready) return;
+    mini.frame.visible = t > 3.1;
+    const racing = race.phase === 'race';
+    const d = (race.lap - 1) * track.length + race.s; // quanto a SF-26 já andou desde a largada
+    const wave = (2 * Math.PI) / DUEL_WAVE;
+    const s = racing ? MINI_GRID + d + DUEL_GAP * Math.sin(d * wave) : MINI_GRID + MINI_IN(t);
+    const v = racing ? race.v * (1 + DUEL_GAP * wave * Math.cos(d * wave)) : 0;
+    const moved = s - mini.s;
+    mini.s = s;
+    if (Math.abs(moved) < 30) mini.spin = (mini.spin + moved / mini.radius) % (Math.PI * 2); // sem girar no corte de volta ao grid
+    mini.accel = damp(mini.accel, (v - mini.v) / Math.max(dt, 1e-3), 6, dt);
+    mini.v = v;
+    const pose = carPose(track, s, -LANE, mini.pose);
+    mini.frame.position.set(pose.x, 0, pose.z);
+    mini.frame.rotation.y = pose.heading;
+    // Carroceria mais mole que a da F1: abaixa a frente na freada e inclina mais nas curvas
+    mini.pitch = damp(mini.pitch, racing ? clamp(-mini.accel * 0.0016, -0.02, 0.02) : 0, 5, dt);
+    mini.roll = damp(mini.roll, racing ? clamp(v * v * pose.curv * 0.0011, -0.035, 0.035) : 0, 5, dt);
+    mini.tilt.rotation.set(mini.pitch, 0, mini.roll);
+    mini.steer = damp(mini.steer, racing ? clamp(Math.atan(mini.wheelbase * pose.curv), -0.4, 0.4) : 0, 8, dt);
+    for (const wheel of mini.wheels) {
+      wheel.rotation.x = mini.spin;
+      wheel.rotation.y = wheel.userData.front ? mini.steer : 0;
+    }
+  };
+
   /* ---------- Um quadro ---------- */
   const update = (dt) => {
     const goal = scrollT();
@@ -802,8 +895,8 @@ function run({ status, loaderLights }) {
     if (goal > 4.6 && race.phase === 'lights') go(false); // quem pulou direto para o fim vê o carro já correndo
     stepRace(dt);
 
-    // Carro na pista
-    sampleTrack(track, race.s, here);
+    // SF-26 na pista (na faixa da esquerda)
+    carPose(track, race.s, LANE, here);
     carFrame.position.set(here.x, 0, here.z);
     carFrame.rotation.y = here.heading;
     const racing = race.phase === 'race';
@@ -825,6 +918,7 @@ function run({ status, loaderLights }) {
       wheel.rotation.y = wheel.userData.front ? steer : 0;
     }
     if (shadow) shadow.material.opacity = (1 - clamp(lift / 0.85, 0, 1) * 0.8) * (1 - explode * 0.55);
+    updateMini(dt);
 
     // Câmera
     sampleShot(t, shot);
@@ -837,7 +931,9 @@ function run({ status, loaderLights }) {
     const side = Math.sin(az) ** 2;
     const dist = dist0 * lerp(1, fit ** 0.62, side * (1 - pov));
     camHeading = dampAngle(camHeading, here.heading, lerp(3.2, 60, pov), dt);
-    camTarget.set(tx, ty, tz);
+    // Na pista, a câmera mira entre os dois carros (o Mini anda até 8 m à frente ou atrás da SF-26)
+    const gap = mini.ready ? clamp(mini.s - ((race.lap - 1) * track.length + race.s), -10, 10) : 0;
+    camTarget.set(tx, ty, tz + gap * 0.5 * mix * (1 - pov));
     camPos.set(Math.cos(el) * Math.sin(az), Math.sin(el), Math.cos(el) * Math.cos(az)).multiplyScalar(dist).add(camTarget);
     camPos.applyAxisAngle(up, camHeading);
     camTarget.applyAxisAngle(up, camHeading);
@@ -955,11 +1051,19 @@ function run({ status, loaderLights }) {
       const [mx, my] = toMap(here.x, here.z);
       mapCar.setAttribute('cx', mx.toFixed(1));
       mapCar.setAttribute('cy', my.toFixed(1));
+      if (mini.ready) {
+        const [rx, ry] = toMap(mini.pose.x, mini.pose.z);
+        mapRival.setAttribute('cx', rx.toFixed(1));
+        mapRival.setAttribute('cy', ry.toFixed(1));
+      }
     }
 
     const camOn = pov > 0.6;
     panelOn('cam', camOn);
     if (camOn) write(hud.clock, new Date().toLocaleTimeString('pt-BR', { hour12: false }));
+    // A câmera do Mini entra num quadro menor quando a da SF-26 já está no lugar
+    pip.on = pov > 0.97 && mini.ready && mini.frame.visible;
+    panelOn('pip', pip.on);
   };
 
   /* ---------- Laço de desenho sob demanda ---------- */
@@ -972,6 +1076,15 @@ function run({ status, loaderLights }) {
     const dt = gap > 100 ? 1 / 60 : gap / 1000;
     const busy = update(dt);
     renderer.render(scene, camera);
+    if (pip.on && pip.w > 0) {
+      // Segunda imagem: a câmera do Mini, desenhada só dentro do quadro do canto
+      renderer.setScissorTest(true);
+      renderer.setScissor(pip.x, pip.y, pip.w, pip.h);
+      renderer.setViewport(pip.x, pip.y, pip.w, pip.h);
+      renderer.render(scene, mini.cam);
+      renderer.setScissorTest(false);
+      renderer.setViewport(0, 0, view.w, view.h);
+    }
     if (busy) {
       // Resolução adaptativa: se a máquina não aguenta ~45 fps, desenha com menos pixels
       if (gap < 100) {
@@ -998,8 +1111,20 @@ function run({ status, loaderLights }) {
     const h = stage.clientHeight;
     if (!w || !h) return;
     renderer.setSize(w, h, false);
+    view.w = w;
+    view.h = h;
     aspect = w / h;
     mobile = w < 760;
+    // O quadro da câmera do Mini é posicionado pelo CSS; a imagem 3D é desenhada exatamente dentro dele
+    const box = panels.pip;
+    pip.w = box.clientWidth;
+    pip.h = box.clientHeight;
+    pip.x = box.offsetLeft + box.clientLeft;
+    pip.y = h - (box.offsetTop + box.clientTop) - pip.h;
+    if (pip.h) {
+      mini.cam.aspect = pip.w / pip.h;
+      mini.cam.updateProjectionMatrix();
+    }
     measure();
     wake();
   };
@@ -1034,8 +1159,58 @@ function run({ status, loaderLights }) {
     wake();
   });
 
-  /* ---------- Download do modelo: as luzes acendem conforme o progresso ---------- */
+  /* ---------- Download dos modelos: as luzes acendem conforme o progresso da SF-26 ---------- */
   const setLights = (count) => loaderLights.forEach((light, i) => light.classList.toggle('on', i < count));
+  const findWheels = (model) => ['wheel_fl', 'wheel_fr', 'wheel_rl', 'wheel_rr'].map((name) => model.getObjectByName(name)).filter(Boolean)
+    .map((wheel) => {
+      wheel.rotation.order = 'YXZ';
+      wheel.userData.base = wheel.position.clone();
+      wheel.userData.front = wheel.position.z > 0;
+      return wheel;
+    });
+  // Reflexos do estúdio nos dois carros; a pintura ganha verniz
+  const prepareMaterials = (model, paint) => {
+    model.traverse((object) => {
+      if (!object.isMesh || carMaterials.includes(object.material)) return;
+      const material = object.material;
+      carMaterials.push(material);
+      material.envMap = envMap;
+      if (material.map) material.map.anisotropy = anisotropy;
+      if (material.name === paint) {
+        material.clearcoat = 1;
+        material.clearcoatRoughness = 0.06;
+      }
+      material.needsUpdate = true;
+    });
+    lastMix = -1; // reaplica a intensidade dos reflexos (estúdio ou pista) no próximo quadro
+  };
+
+  // O Mini só aparece quando a pista surge: é baixado depois, com a SF-26 já na tela
+  const loadMini = () => {
+    new GLTFLoader().load(MINI_URL, async (gltf) => {
+      const model = gltf.scene;
+      const root = model.getObjectByName('mini');
+      const info = (root && root.userData) || {};
+      if (info.wheelRadius) mini.radius = info.wheelRadius;
+      if (info.wheelbase) mini.wheelbase = info.wheelbase;
+      // ESP32-CAM no teto, na beirada da frente
+      mini.cam.position.set(0, (info.roofTop || 1.43) + 0.09 - mini.tilt.position.y, (info.roofFront || 0.5) - 0.12);
+      mini.wheels = findWheels(model);
+      prepareMaterials(model, 'COOPER');
+      mini.holder.add(model);
+      mini.frame.add(bakeContactShadow(renderer, model, { width: 2.8, length: 5.2, centerZ: 0.06 }));
+      mapRival.setAttribute('r', '4');
+      mini.ready = true;
+      update(0);
+      mini.frame.visible = true; // compila os materiais agora, para não engasgar quando ele aparecer
+      try {
+        await renderer.compileAsync(scene, camera);
+      } catch { /* compila no primeiro quadro */ }
+      mini.frame.visible = t > 3.1;
+      wake();
+    }, undefined, () => { /* sem o Mini, a corrida segue só com a SF-26 */ });
+  };
+
   status.textContent = 'Aquecendo os pneus… 0%';
   new GLTFLoader().load(MODEL_URL, async (gltf) => {
     const model = gltf.scene;
@@ -1044,25 +1219,9 @@ function run({ status, loaderLights }) {
     if (root && root.userData.wheelRadius) wheelRadius = root.userData.wheelRadius;
     if (root && root.userData.wheelbase) wheelbase = root.userData.wheelbase;
     body = model.getObjectByName('body');
-    wheels = ['wheel_fl', 'wheel_fr', 'wheel_rl', 'wheel_rr'].map((name) => model.getObjectByName(name)).filter(Boolean);
-    for (const wheel of wheels) {
-      wheel.rotation.order = 'YXZ';
-      wheel.userData.base = wheel.position.clone();
-      wheel.userData.front = wheel.position.z > 0;
-    }
-    model.traverse((object) => {
-      if (!object.isMesh || carMaterials.includes(object.material)) return;
-      const material = object.material;
-      carMaterials.push(material);
-      material.envMap = envMap;
-      if (material.map) material.map.anisotropy = anisotropy;
-      if (material.name === 'sf25_paints') { // pintura com verniz
-        material.clearcoat = 1;
-        material.clearcoatRoughness = 0.06;
-      }
-      material.needsUpdate = true;
-    });
-    shadow = bakeContactShadow(renderer, model);
+    wheels = findWheels(model);
+    prepareMaterials(model, 'sf25_paints');
+    shadow = bakeContactShadow(renderer, model, { width: 3.6, length: 7.6, centerZ: PIVOT.z });
     carFrame.add(shadow);
 
     status.textContent = 'Luzes apagadas!';
@@ -1077,6 +1236,7 @@ function run({ status, loaderLights }) {
     ready = true;
     stage.classList.add('is-ready');
     wake();
+    loadMini();
   }, (event) => {
     if (!event.lengthComputable) return;
     const progress = event.loaded / event.total;

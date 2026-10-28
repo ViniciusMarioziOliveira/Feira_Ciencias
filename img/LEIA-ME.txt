@@ -1,19 +1,22 @@
-Coloque aqui as fotos dos integrantes da 7D Games, com estes nomes
-(de preferência verticais, 4:5):
+Fotos dos integrantes da 7D Games:
 
-  emannoel.jpg  -> Emannoel (também aparece na seção Brawl SENAI)
-  julio.jpg     -> Julio (também aparece na equipe do Rocket SENAI)
-  john.jpg      -> John (também aparece na seção TRON)
-  luiz.jpg      -> Luiz
-  pedro.jpg     -> Pedro (também aparece na equipe do Rocket SENAI)
-  vinicius.jpg  -> Vinícius (também aparece na equipe do Rocket SENAI)
-  yan.jpg       -> Yan
+  integrantes/  -> as fotos originais (1920x1080, com faixas brancas dos lados).
+                   O site não usa estas; ficam guardadas como fonte.
+  equipe/       -> as versões que o site carrega, já recortadas (sem as faixas
+                   brancas) e mais leves:
+    <nome>-f1.webp     -> macacão de F1, no grid de largada (o início da página).
+                          Todos os 7 integrantes. 720x900 (4:5).
+    <nome>-terno.webp  -> de terno, nas seções dos projetos:
+                          emannoel (Brawl SENAI), john (TRON) e
+                          julio, pedro e vinicius (equipe do Rocket SENAI).
+
+Para trocar uma foto, salve a nova em equipe/ com o mesmo nome. As de macacão
+devem ser verticais (4:5) com o rosto bem no alto: no tablet o cartão fica
+quadrado e corta a parte de baixo. As de terno podem ser mais altas; o site
+mostra a parte de cima.
 
 Enquanto uma foto não existir, a página mostra o número da pessoa no grid de
-largada (o início da página) e as iniciais nas seções dos projetos.
-
-Dica: fotos muito grandes deixam a página lenta. Uns 900 px de largura já
-ficam ótimos. No grid, o rosto deve ficar no terço de cima da foto.
+largada e as iniciais nas seções dos projetos.
 
 O que cada integrante fez: no index.html, cada cartão do grid de largada tem
 data-project com um ou mais destes valores, separados por espaço:
@@ -22,10 +25,14 @@ Ex.: data-project="rocket site". Isso define quem acende quando alguém passa
 o mouse sobre um projeto (ou sobre "Website" e "Banners", nos bastidores).
 O texto que aparece no cartão fica logo abaixo, em <p class="driver-role">.
 
-Modelo 3D (pasta 3d_model):
+Modelos 3D (pasta 3d_model):
   2026_ferrari_sf-26.glb -> arquivo original do Sketchfab (19 MB), não é usado pelo site
   sf-26-web.glb          -> versão otimizada que o site carrega (9,6 MB): texturas em WebP,
                             rodas separadas para girar e esterçar
+  mini_cooper_s.glb      -> arquivo original do Sketchfab (4,6 MB), não é usado pelo site
+  mini-cooper-web.glb    -> versão otimizada do Mini (1,3 MB): sem as peças invisíveis do
+                            original, rodas separadas e texturas em WebP. Ele é baixado
+                            depois da SF-26 e só aparece quando a pista surge.
 rocket-poster.webp -> imagem do carro mostrada enquanto o 3D carrega
 
 O 3D precisa que o site seja aberto por um servidor (por exemplo, a extensão
