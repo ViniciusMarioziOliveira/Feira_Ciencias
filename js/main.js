@@ -66,6 +66,33 @@
     });
   }
 
+  /* ---------- Links dos repositórios no GitHub ---------- */
+  // Basta colar o link no href (com ou sem ".git"): o texto "usuário/repositório" sai dele.
+  // Com o href vazio, o botão fica como "Link em breve" e não é clicável.
+  document.querySelectorAll('a.repo').forEach((repo) => {
+    const href = (repo.getAttribute('href') || '').trim();
+    const path = repo.querySelector('.repo-path');
+    let url = null;
+    try {
+      if (href && href !== '#') url = new URL(/^https?:\/\//i.test(href) ? href : `https://${href}`);
+    } catch { /* link quebrado: fica como "em breve" */ }
+    if (!url) {
+      repo.removeAttribute('href');
+      repo.classList.add('is-pending');
+      path.textContent = 'Link em breve';
+      return;
+    }
+    url.pathname = url.pathname.replace(/\.git$/i, '').replace(/\/+$/, '');
+    repo.href = url.href;
+    // "usuário/" e "repositório" não quebram no meio (nos hífens); se faltar espaço, a linha quebra depois da barra
+    const parts = url.pathname.slice(1).split('/');
+    path.replaceChildren(...parts.flatMap((part, i) => {
+      const span = document.createElement('span');
+      span.textContent = i < parts.length - 1 ? `${part}/` : part;
+      return i ? [document.createElement('wbr'), span] : [span];
+    }));
+  });
+
   /* ---------- Rocket SENAI aberto direto do arquivo ---------- */
   // Pelo file:// o navegador bloqueia módulos ES e o download do modelo, então o js/rocket.js nem roda.
   const rocketStatus = document.querySelector('.rk-loader-status');

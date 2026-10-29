@@ -7,8 +7,8 @@ Fotos dos integrantes da 7D Games:
     <nome>-f1.webp     -> macacão de F1, no grid de largada (o início da página).
                           Todos os 7 integrantes. 720x900 (4:5).
     <nome>-terno.webp  -> de terno, nas seções dos projetos:
-                          emannoel (Brawl SENAI), john (TRON) e
-                          julio, pedro e vinicius (equipe do Rocket SENAI).
+                          emannoel (Brawl SENAI), john (TRON), yan (Orbital Heads)
+                          e julio, pedro e vinicius (equipe do Rocket SENAI).
 
 Para trocar uma foto, salve a nova em equipe/ com o mesmo nome. As de macacão
 devem ser verticais (4:5) com o rosto bem no alto: no tablet o cartão fica
@@ -20,10 +20,16 @@ largada e as iniciais nas seções dos projetos.
 
 O que cada integrante fez: no index.html, cada cartão do grid de largada tem
 data-project com um ou mais destes valores, separados por espaço:
-  brawl, tron, rocket, site (website) e banners
+  brawl, tron, orbital, rocket, site (website) e banners
 Ex.: data-project="rocket site". Isso define quem acende quando alguém passa
 o mouse sobre um projeto (ou sobre "Website" e "Banners", nos bastidores).
 O texto que aparece no cartão fica logo abaixo, em <p class="driver-role">.
+
+Links dos repositórios no GitHub: cada jogo tem um botão logo abaixo do
+"Procure esse cara!". O do Brawl SENAI ainda aparece como "Link em breve".
+Para colocar o link, procure no index.html o comentário "Repositório do Brawl
+SENAI" e cole o link entre as aspas do href="" logo abaixo (com ou sem ".git").
+O texto do botão se ajusta sozinho.
 
 Modelos 3D (pasta 3d_model):
   2026_ferrari_sf-26.glb -> arquivo original do Sketchfab (19 MB), não é usado pelo site

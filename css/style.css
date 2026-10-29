@@ -24,6 +24,10 @@
   --tron: #2ae8ff;
   --tron-glow: rgba(42, 232, 255, 0.55);
 
+  --orbital: #b6ff3b;
+  --orbital-glow: rgba(182, 255, 59, 0.5);
+  --orbital-alien: #ff5bd6;
+
   --rocket: #e8150b;
   --rocket-text: #ff4538;
   --rocket-glow: rgba(232, 21, 11, 0.45);
@@ -37,6 +41,7 @@
   --font-body: "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-brawl: "Lilita One", "Arial Black", Impact, sans-serif;
   --font-tron: "Orbitron", "Segoe UI", sans-serif;
+  --font-orbital: "Black Ops One", "Arial Black", Impact, sans-serif;
   --font-rocket: "Saira", "Arial Narrow", "Segoe UI", sans-serif;
 
   --pad: clamp(16px, 4vw, 48px);
@@ -87,13 +92,21 @@ h1, h2, h3, p, figure, dl, dd { margin: 0; }
 }
 .skip:focus { top: 12px; }
 
+/* Só guarda os desenhos (<symbol>) usados com <use>; não aparece */
+.sprite {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
 /* Barra de progresso da rolagem (só CSS; some em navegadores sem suporte) */
 .progress {
   position: fixed;
   inset: 0 0 auto;
   z-index: 60;
   height: 3px;
-  background: linear-gradient(90deg, var(--brawl), var(--tron), var(--rocket));
+  background: linear-gradient(90deg, var(--brawl), var(--tron), var(--orbital), var(--rocket));
   transform-origin: 0 50%;
   transform: scaleX(0);
   pointer-events: none;
@@ -146,7 +159,7 @@ h1, h2, h3, p, figure, dl, dd { margin: 0; }
 }
 .brand-mark {
   font: 900 18px/1 var(--font-tron);
-  background: linear-gradient(90deg, var(--brawl), var(--tron), var(--rocket-text));
+  background: linear-gradient(90deg, var(--brawl), var(--tron), var(--orbital), var(--rocket-text));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -169,6 +182,7 @@ h1, h2, h3, p, figure, dl, dd { margin: 0; }
 }
 .nav a[href="#brawl"] { --c: var(--brawl); }
 .nav a[href="#tron"] { --c: var(--tron); }
+.nav a[href="#orbital"] { --c: var(--orbital); }
 .nav a[href="#rocket"] { --c: var(--rocket-text); }
 .nav a:hover,
 .nav a[aria-current] {
@@ -678,6 +692,7 @@ h1, h2, h3, p, figure, dl, dd { margin: 0; }
 .driver:hover,
 .hero:has([data-show="brawl"]:is(:hover, :focus-visible)) [data-project~="brawl"] .driver,
 .hero:has([data-show="tron"]:is(:hover, :focus-visible)) [data-project~="tron"] .driver,
+.hero:has([data-show="orbital"]:is(:hover, :focus-visible)) [data-project~="orbital"] .driver,
 .hero:has([data-show="rocket"]:is(:hover, :focus-visible)) [data-project~="rocket"] .driver,
 .hero:has([data-show="site"]:is(:hover, :focus-visible)) [data-project~="site"] .driver,
 .hero:has([data-show="banners"]:is(:hover, :focus-visible)) [data-project~="banners"] .driver {
@@ -689,6 +704,7 @@ h1, h2, h3, p, figure, dl, dd { margin: 0; }
 .driver:hover::before,
 .hero:has([data-show="brawl"]:is(:hover, :focus-visible)) [data-project~="brawl"] .driver::before,
 .hero:has([data-show="tron"]:is(:hover, :focus-visible)) [data-project~="tron"] .driver::before,
+.hero:has([data-show="orbital"]:is(:hover, :focus-visible)) [data-project~="orbital"] .driver::before,
 .hero:has([data-show="rocket"]:is(:hover, :focus-visible)) [data-project~="rocket"] .driver::before,
 .hero:has([data-show="site"]:is(:hover, :focus-visible)) [data-project~="site"] .driver::before,
 .hero:has([data-show="banners"]:is(:hover, :focus-visible)) [data-project~="banners"] .driver::before { transform: scaleX(1); }
@@ -698,10 +714,12 @@ h1, h2, h3, p, figure, dl, dd { margin: 0; }
 .standings-list a:is(:hover, :focus-visible),
 .hero:has([data-project~="brawl"] .driver:hover) [data-show="brawl"],
 .hero:has([data-project~="tron"] .driver:hover) [data-show="tron"],
+.hero:has([data-project~="orbital"] .driver:hover) [data-show="orbital"],
 .hero:has([data-project~="rocket"] .driver:hover) [data-show="rocket"] { background: rgba(255, 255, 255, 0.05); }
 .standings-list a:is(:hover, :focus-visible) .st-no,
 .hero:has([data-project~="brawl"] .driver:hover) [data-show="brawl"] .st-no,
 .hero:has([data-project~="tron"] .driver:hover) [data-show="tron"] .st-no,
+.hero:has([data-project~="orbital"] .driver:hover) [data-show="orbital"] .st-no,
 .hero:has([data-project~="rocket"] .driver:hover) [data-show="rocket"] .st-no { background: var(--rocket); }
 .standings-list a:hover::after { transform: translateY(3px); color: #fff; }
 .crew li:hover,
@@ -793,6 +811,48 @@ h1, h2, h3, p, figure, dl, dd { margin: 0; }
 }
 .js .arrow .arrow-head { transition-duration: 0.25s; transition-delay: 1.25s; }
 .js .callout.is-in .arrow path { stroke-dashoffset: 0; }
+
+/* Link do repositório no GitHub (cada jogo pinta o seu). O js/main.js escreve "usuário/repositório"
+   a partir do próprio link; sem link, o botão fica como "Link em breve" e não é clicável. */
+.repo-row { margin-top: 30px; }
+.repo {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  max-width: 100%;
+  padding: 12px 20px 12px 14px;
+  text-decoration: none;
+  transition: transform 0.2s var(--ease-out), box-shadow 0.2s, background-color 0.2s, filter 0.2s;
+}
+.repo::after {
+  content: "↗";
+  flex: none;
+  font: 700 18px/1 var(--font-body);
+  transition: transform 0.2s var(--ease-out);
+}
+.repo:hover::after { transform: translate(2px, -2px); }
+.repo.is-pending { cursor: default; }
+.repo.is-pending::after { content: none; }
+.repo-icon {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  fill: currentColor;
+}
+.repo-text { display: grid; gap: 5px; min-width: 0; }
+.repo-label {
+  font: 700 10.5px/1 var(--font-tron);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+.repo-path {
+  font-size: 17px;
+  line-height: 1.15;
+}
+.repo-path span { white-space: nowrap; }
 
 /* =========================================================
    PROJETO 01 · BRAWL SENAI — cartoon, amarelo e roxo
@@ -887,6 +947,27 @@ h1, h2, h3, p, figure, dl, dd { margin: 0; }
   box-shadow: 7px 7px 0 var(--brawl-ink);
 }
 .brawl .callout strong { color: #d81b72; font-weight: 400; }
+
+/* Repositório: botão amarelo de desenho animado, alinhado com o balão da fala */
+.brawl .repo-row { margin-left: calc(clamp(84px, 9vw, 128px) + 18px); }
+.brawl .repo {
+  border: 4px solid var(--brawl-ink);
+  border-radius: 18px;
+  background: var(--brawl);
+  color: var(--brawl-ink);
+  box-shadow: 6px 6px 0 var(--brawl-ink);
+}
+.brawl .repo:hover { transform: translate(-2px, -2px); box-shadow: 8px 8px 0 var(--brawl-ink); }
+.brawl .repo-label { font: 400 12px/1 var(--font-brawl); letter-spacing: 0.08em; }
+.brawl .repo-path { font: 400 21px/1.1 var(--font-brawl); letter-spacing: 0.01em; }
+.brawl .repo.is-pending {
+  border-style: dashed;
+  border-color: rgba(255, 210, 31, 0.55);
+  background: rgba(23, 8, 48, 0.6);
+  color: var(--brawl);
+  box-shadow: none;
+  transform: none;
+}
 
 /* =========================================================
    PROJETO 02 · TRON — neon ciano sobre grade em perspectiva
@@ -1004,8 +1085,383 @@ h1, h2, h3, p, figure, dl, dd { margin: 0; }
   box-shadow: 0 0 24px rgba(42, 232, 255, 0.4), inset 0 0 24px rgba(42, 232, 255, 0.25);
 }
 
+/* Repositório: botão de neon, no mesmo traço da foto */
+.tron .repo {
+  border: 2px solid var(--tron);
+  border-radius: 8px;
+  background: rgba(42, 232, 255, 0.06);
+  color: #cdefff;
+  box-shadow: 0 0 24px rgba(42, 232, 255, 0.22), inset 0 0 18px rgba(42, 232, 255, 0.1);
+}
+.tron .repo:hover {
+  background: rgba(42, 232, 255, 0.14);
+  box-shadow: 0 0 36px rgba(42, 232, 255, 0.45), inset 0 0 22px rgba(42, 232, 255, 0.2);
+}
+.tron .repo-icon,
+.tron .repo::after { color: var(--tron); filter: drop-shadow(0 0 6px var(--tron-glow)); }
+.tron .repo-path {
+  color: var(--tron);
+  font: 700 15px/1.2 var(--font-tron);
+  letter-spacing: 0.04em;
+  text-shadow: 0 0 10px var(--tron-glow);
+}
+
 /* =========================================================
-   PROJETO 03 · ROCKET SENAI — o carro em 3D, guiado pela rolagem
+   PROJETO 03 · ORBITAL HEADS — a Terra vista da órbita, com a frota alienígena chegando
+   Verde-limão da defesa (o HUD), magenta dos invasores, azul da atmosfera.
+   ========================================================= */
+.orbital {
+  --cap: clamp(110px, 14vw, 210px); /* quanto da Terra aparece no pé da seção */
+  /* Estrelas: pontinhos em grades de tamanhos diferentes, para o padrão não se repetir à vista */
+  background:
+    radial-gradient(circle at 17px 23px, rgba(255, 255, 255, 0.85) 0 1px, transparent 1.6px) 0 0 / 131px 97px,
+    radial-gradient(circle at 61px 88px, rgba(200, 215, 255, 0.6) 0 0.8px, transparent 1.4px) 0 0 / 173px 139px,
+    radial-gradient(circle at 140px 40px, #fff 0 1.3px, transparent 2px) 0 0 / 227px 181px,
+    radial-gradient(circle at 30px 150px, rgba(255, 220, 245, 0.55) 0 0.7px, transparent 1.3px) 0 0 / 89px 163px,
+    linear-gradient(to bottom, var(--bg), transparent 12%),
+    radial-gradient(55% 45% at 84% 4%, rgba(196, 77, 255, 0.22), transparent 70%),
+    radial-gradient(120% 90% at 30% 30%, #0b1236 0%, #060a24 45%, #03040e 100%);
+}
+
+/* ---------- Cenário (decorativo, atrás de tudo) ---------- */
+.orb-scene {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+.orb-fleet { position: absolute; inset: 0; }
+
+/* Peças da nave (o desenho fica no <symbol id="orb-ship"> do index.html) */
+.ship-hull { fill: #170b2c; stroke: #a347ff; stroke-width: 2; }
+.ship-rib { fill: none; stroke: #52288f; stroke-width: 1.6; }
+.ship-claw { fill: none; stroke: #c45bff; stroke-width: 3.2; stroke-linecap: round; }
+.ship-core { fill: var(--orbital-alien); }
+
+.orb-ship {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: calc(var(--s, 1) * clamp(44px, 5vw, 72px));
+  aspect-ratio: 1;
+  rotate: var(--r, 0deg);
+}
+.orb-ship svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  filter: drop-shadow(0 0 7px rgba(196, 77, 255, 0.6));
+}
+/* Rastro de quem veio do espaço profundo (sai do centro da nave, para trás) */
+.orb-ship::before {
+  content: "";
+  position: absolute;
+  left: calc(50% - 1px);
+  bottom: 50%;
+  width: 2px;
+  height: 280%;
+  background: linear-gradient(to top, rgba(196, 77, 255, 0.45), transparent);
+}
+/* A frota desce devagar na direção da Terra, cada nave no seu ritmo. Com "transform", o passo vale
+   na direção para onde a nave aponta (já inclinada pelo rotate) */
+.orbital.is-visible .orb-ship { animation: orb-descend var(--t, 18s) ease-in-out infinite alternate; }
+@keyframes orb-descend { to { transform: translateY(46px); } }
+
+/* Mira da defesa travada numa das naves */
+.orb-lock {
+  --c: var(--orbital);
+  position: absolute;
+  inset: -34%;
+  background:
+    linear-gradient(var(--c) 0 0) left top / 14px 2px,
+    linear-gradient(var(--c) 0 0) left top / 2px 14px,
+    linear-gradient(var(--c) 0 0) right top / 14px 2px,
+    linear-gradient(var(--c) 0 0) right top / 2px 14px,
+    linear-gradient(var(--c) 0 0) left bottom / 14px 2px,
+    linear-gradient(var(--c) 0 0) left bottom / 2px 14px,
+    linear-gradient(var(--c) 0 0) right bottom / 14px 2px,
+    linear-gradient(var(--c) 0 0) right bottom / 2px 14px;
+  background-repeat: no-repeat;
+  filter: drop-shadow(0 0 4px var(--orbital-glow));
+  rotate: calc(-1 * var(--r, 0deg)); /* a mira fica reta, mesmo com a nave inclinada */
+}
+.orb-lock::after {
+  content: "Alvo travado";
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 7px);
+  translate: -50% 0;
+  color: var(--orbital);
+  font: 700 9px/1 var(--font-tron);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.orbital.is-visible .orb-lock { animation: orb-lock 3.4s var(--ease-out) infinite; }
+@keyframes orb-lock {
+  0% { scale: 1.9; opacity: 0; }
+  16% { scale: 1; opacity: 1; }
+  70% { opacity: 1; }
+  74% { opacity: 0.2; }
+  78%, 100% { opacity: 1; }
+}
+
+/* A Terra: um círculo enorme do qual só o alto aparece, com a atmosfera acesa e o sol nascendo na borda */
+.orb-earth {
+  position: absolute;
+  left: 50%;
+  top: calc(100% - var(--cap));
+  width: max(2400px, 230vw);
+  aspect-ratio: 1;
+  translate: -50% 0;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, #01040d 96.6%, #0a2766 98.8%, #5e9dff 99.75%, #c9e2ff 100%);
+  box-shadow:
+    0 -2px 10px rgba(140, 190, 255, 0.55),
+    0 -14px 60px rgba(77, 141, 255, 0.4),
+    0 -40px 140px rgba(77, 141, 255, 0.18);
+}
+/* Sol nascendo atrás da Terra: brilho em cima da borda, inclinado junto com a curva
+   (a 63% da largura, a borda está a 1,72% do alto do círculo e inclinada 15°) */
+.orb-earth::before {
+  content: "";
+  position: absolute;
+  left: 63%;
+  top: 1.72%;
+  width: 13%;
+  height: 2.4%;
+  translate: -50% -50%;
+  rotate: 15deg;
+  background:
+    radial-gradient(closest-side, #fffdf6 0 6%, rgba(255, 236, 200, 0.85) 16%, rgba(255, 190, 120, 0.3) 45%, transparent),
+    radial-gradient(50% 18% at 50% 50%, rgba(255, 248, 230, 0.9), transparent);
+}
+
+/* ---------- Foto: moldura de HUD com cantos chanfrados e uma órbita em volta ---------- */
+.orbital .player {
+  /* Órbita: metade da largura e altura do centro, em % da largura da foto (a foto tem 125 de altura).
+     A elipse é sempre 5x mais larga que alta (o satélite conta com isso). */
+  --orb-a: 75;
+  --orb-y: 80;
+  isolation: isolate;
+  container-type: inline-size;
+}
+.orbital .frame {
+  --cut: 26px;
+  z-index: 1;
+  padding: 2px;
+  background: linear-gradient(155deg, var(--orbital), rgba(182, 255, 59, 0.2) 38%, rgba(196, 77, 255, 0.3) 70%, var(--orbital-alien));
+  clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
+}
+.orbital .frame img,
+.orbital .frame::after,
+.orbital .photo-fallback {
+  clip-path: polygon(calc(var(--cut) - 1px) 0, 100% 0, 100% calc(100% - var(--cut) + 1px), calc(100% - var(--cut) + 1px) 100%, 0 100%, 0 calc(var(--cut) - 1px));
+}
+/* Linhas de varredura de monitor e o pé da foto escurecido */
+.orbital .frame::after {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  background:
+    linear-gradient(to top, rgba(3, 6, 22, 0.7), transparent 34%),
+    repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.09) 0 1px, transparent 1px 4px);
+  pointer-events: none;
+}
+.orb-tag {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 1;
+  padding: 6px 9px;
+  border: 1px solid rgba(182, 255, 59, 0.5);
+  background: rgba(3, 6, 20, 0.78);
+  color: var(--orbital);
+  font: 700 10px/1 var(--font-tron);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+.orbital .photo-fallback { inset: 2px; background: radial-gradient(circle at 50% 40%, #16224f, #050820 70%); }
+.orbital .photo-fallback span {
+  border: 2px solid var(--orbital);
+  color: var(--orbital);
+  font-family: var(--font-orbital);
+  font-weight: 400;
+  box-shadow: 0 0 24px var(--orbital-glow);
+}
+
+/* Linha da órbita: a metade de trás passa atrás da foto e a da frente, por cima */
+.orbital .player::before,
+.orbital .player::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: calc(var(--orb-a) * 2%);
+  aspect-ratio: 5;
+  margin-top: calc(var(--orb-y) * 1%); /* % na margem conta pela largura: fica na altura certa da foto */
+  translate: -50% -50%;
+  rotate: -10deg;
+  border: 1.5px solid rgba(182, 255, 59, 0.5);
+  border-radius: 50%;
+  pointer-events: none;
+}
+.orbital .player::before { z-index: 0; }
+.orbital .player::after {
+  z-index: 2;
+  clip-path: inset(50% 0 0 0);
+  border-color: rgba(182, 255, 59, 0.9);
+  filter: drop-shadow(0 0 4px var(--orbital-glow));
+}
+/* Satélite, só com rotate/scale/opacity (roda na placa de vídeo):
+   - .orb-sat é o plano da órbita: inclinado -10° e achatado 5x, igual à linha;
+   - o braço (i) gira e leva o satélite (b) até a borda;
+   - b desfaz o giro e o achatamento (fica redondo) e cresce um pouco quando passa na frente.
+   As duas cópias giram juntas: a da frente só aparece na metade de baixo da volta, a de trás na de cima. */
+.orb-sat {
+  position: absolute;
+  left: 50%;
+  top: calc(var(--orb-y) * 1cqi);
+  z-index: 2;
+  rotate: -10deg;
+  scale: 1 0.2;
+  pointer-events: none;
+}
+.orb-sat.is-back { z-index: 0; opacity: 0; }
+.orb-sat i { position: absolute; }
+.orb-sat b {
+  position: absolute;
+  left: -6px;
+  top: -6px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #f4ffe0;
+  box-shadow: 0 0 0 3px rgba(182, 255, 59, 0.35), 0 0 16px 4px var(--orbital-glow);
+  translate: calc(var(--orb-a) * 1cqi) 0;
+  scale: 1 5;
+}
+.orbital.is-visible .orb-sat i { animation: orb-arm 10s linear infinite; }
+.orbital.is-visible .orb-sat b { animation: orb-sat 10s linear infinite; }
+.orbital.is-visible .orb-sat.is-front { animation: orb-front 10s linear infinite; }
+.orbital.is-visible .orb-sat.is-back { animation: orb-back 10s linear infinite; }
+@keyframes orb-arm { to { rotate: 360deg; } }
+@keyframes orb-sat {
+  0% { rotate: 0deg; scale: 1 5; }
+  25% { scale: 1.3 6.5; }
+  50% { scale: 1 5; }
+  75% { scale: 0.75 3.75; }
+  100% { rotate: -360deg; scale: 1 5; }
+}
+@keyframes orb-front { 0%, 49.9% { opacity: 1; } 50%, 100% { opacity: 0; } }
+@keyframes orb-back { 0%, 49.9% { opacity: 0; } 50%, 100% { opacity: 1; } }
+
+/* Nome numa plaquinha escura: fica legível mesmo sobre o brilho da atmosfera */
+.orbital figcaption {
+  width: fit-content;
+  max-width: 100%;
+  margin: 16px auto 0;
+  padding: 8px 14px;
+  border: 1px solid rgba(182, 255, 59, 0.35);
+  background: rgba(3, 6, 20, 0.85);
+  color: var(--orbital);
+  font: 700 12px/1.5 var(--font-tron);
+  letter-spacing: 0.22em;
+  text-align: center;
+  text-transform: uppercase;
+  text-shadow: 0 0 10px var(--orbital-glow);
+  text-wrap: balance;
+}
+
+/* ---------- Texto ---------- */
+.orbital .project-copy { container-type: inline-size; }
+.orbital-title {
+  margin-top: 18px;
+  color: #eef2ff;
+  font: 400 clamp(52px, 15.5cqi, 128px)/0.9 var(--font-orbital);
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  text-shadow: 0 0 40px rgba(110, 140, 255, 0.35);
+}
+.orbital-title span {
+  display: block;
+  color: var(--orbital);
+  text-shadow: 0 0 24px var(--orbital-glow), 0 0 70px rgba(182, 255, 59, 0.25);
+}
+
+/* Aviso de invasão, com a luz piscando */
+.orb-alert {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 12px;
+  width: fit-content;
+  max-width: 100%;
+  margin-top: 26px;
+  padding: 10px 16px 10px 12px;
+  border: 1px solid rgba(255, 91, 214, 0.4);
+  background: rgba(255, 91, 214, 0.08);
+  color: #f3dcff;
+  font: 500 11.5px/1.35 var(--font-tron);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.orb-alert b {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--orbital-alien);
+  font-weight: 900;
+}
+.orb-alert b::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 10px currentColor;
+}
+.orbital.is-visible .orb-alert b::before { animation: orb-blink 1.2s steps(1) infinite; }
+@keyframes orb-blink { 50% { opacity: 0.15; } }
+
+.orbital .callout { color: var(--orbital); }
+.orbital .callout span {
+  padding: 14px 20px;
+  border: 1px solid rgba(182, 255, 59, 0.28);
+  border-left: 3px solid var(--orbital);
+  background: rgba(3, 6, 20, 0.72);
+  color: #e6ecff;
+  font: 500 clamp(15px, 1.5vw, 19px)/1.4 var(--font-tron);
+  letter-spacing: 0.02em;
+}
+.orbital .callout strong {
+  color: var(--orbital);
+  font-weight: 900;
+  text-shadow: 0 0 14px var(--orbital-glow);
+}
+.orbital .arrow { filter: drop-shadow(0 0 6px var(--orbital-glow)); }
+
+/* Repositório: botão de lançamento verde-limão com cantos chanfrados (o fundo fica no ::before
+   para o contorno de foco não ser cortado) */
+.orbital .repo-row { margin-left: calc(clamp(84px, 9vw, 128px) + 18px); }
+.orbital .repo { color: #0b1500; }
+.orbital .repo::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--orbital);
+  clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px);
+  transition: background-color 0.2s;
+}
+.orbital .repo:hover { filter: drop-shadow(0 0 14px var(--orbital-glow)); }
+.orbital .repo:hover::before { background: #cbff6e; }
+.orbital .repo-label { opacity: 0.7; }
+.orbital .repo-path { font: 700 15px/1.2 var(--font-tron); letter-spacing: 0.03em; }
+
+/* =========================================================
+   PROJETO 04 · ROCKET SENAI — o carro em 3D, guiado pela rolagem
    O palco (.rk-stage) fica preso na tela enquanto os capítulos passam por cima dele.
    ========================================================= */
 .rocket {
@@ -1710,10 +2166,20 @@ html:not(.js) .rk-loader { display: none; }
   /* No celular a foto vem primeiro e a seta aponta para cima */
   .player { max-width: 320px; }
   .tron .player { order: -1; }
-  .brawl .arrow { rotate: 57deg; }
+  .brawl .arrow,
+  .orbital .arrow { rotate: 57deg; }
   .tron .arrow { rotate: -57deg; }
   .callout { margin-top: 26px; }
   .arrow { width: 72px; }
+  .brawl .repo-row,
+  .orbital .repo-row { margin-left: 90px; } /* alinhado com o balão, depois da seta */
+  .orbital .player { --orb-a: 60; } /* órbita mais fechada, para caber na tela */
+
+  /* Orbital Heads: a frota ganha uma faixa só dela no topo (senão fica atrás da foto)
+     e a Terra desce para baixo do texto */
+  .orbital { padding-top: 190px; padding-bottom: calc(var(--cap) + 44px); }
+  .orb-fleet { bottom: auto; height: 190px; }
+  .orb-ship { top: calc(var(--y) * 3); }
 }
 
 /* Início no celular: uma fila só, em zigue-zague, com os cartões deitados */
@@ -1768,6 +2234,11 @@ html:not(.js) .rk-loader { display: none; }
   .nav a { padding: 9px 11px; font-size: 12px; }
   .nav .long { display: none; }
   .brawl-title { -webkit-text-stroke-width: 7px; }
+  .orb-alert { letter-spacing: 0.1em; }
+  .orb-ship:nth-child(3),
+  .orb-ship:nth-child(5) { display: none; } /* menos naves, para a mira ter espaço */
+  .brawl .repo-row,
+  .orbital .repo-row { margin-left: 0; }
   .eyebrow { gap: 10px; font-size: 10.5px; font-stretch: 100%; letter-spacing: 0.14em; }
   .standings-list a {
     grid-template-columns: 44px minmax(0, 1fr);

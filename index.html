@@ -4,13 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>7D Games · Feira de Ciências SENAI</title>
-  <meta name="description" content="7D Games na Feira de Ciências do SENAI: Brawl SENAI, TRON e Rocket SENAI, os projetos e os integrantes da equipe.">
+  <meta name="description" content="7D Games na Feira de Ciências do SENAI: Brawl SENAI, TRON, Orbital Heads e Rocket SENAI, os projetos e os integrantes da equipe.">
   <meta name="theme-color" content="#07070b">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2307070b'/%3E%3Cg stroke-width='7' stroke-linecap='round'%3E%3Cpath d='M12 50 22 14' stroke='%23ffd21f'/%3E%3Cpath d='M27 50 37 14' stroke='%232ae8ff'/%3E%3Cpath d='M42 50 52 14' stroke='%23ff4538'/%3E%3C/g%3E%3C/svg%3E">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Orbitron:wght@500;700;900&family=Saira:ital,wdth,wght@0,100..125,400..900;1,100..125,400..900&family=Unbounded:wght@500;800;900&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Lilita+One&family=Orbitron:wght@500;700;900&family=Saira:ital,wdth,wght@0,100..125,400..900;1,100..125,400..900&family=Unbounded:wght@500;800;900&display=swap">
   <link rel="stylesheet" href="css/style.css">
 
   <script>document.documentElement.classList.add('js')</script>
@@ -31,6 +31,20 @@
   <div class="progress" aria-hidden="true"></div>
   <div class="top-sentinel" aria-hidden="true"></div>
 
+  <!-- Desenhos usados mais de uma vez: o ícone do GitHub e a nave alienígena do Orbital Heads -->
+  <svg class="sprite" aria-hidden="true">
+    <symbol id="icon-github" viewBox="0 0 16 16">
+      <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+    </symbol>
+    <!-- Nave biomecânica, de frente para a Terra (para baixo): casco com costelas, garras e o núcleo aceso -->
+    <symbol id="orb-ship" viewBox="-40 -40 80 80">
+      <path class="ship-claw" d="M-21 4C-35 13-35 28-22 37M21 4C35 13 35 28 22 37"/>
+      <path class="ship-hull" d="M0-33C17-33 29-19 27-2 25 12 14 24 0 31-14 24-25 12-27-2-29-19-17-33 0-33Z"/>
+      <path class="ship-rib" d="M-21-17Q0-9 21-17M-26-4Q0 5 26-4M-21 10Q0 18 21 10M0-31V27"/>
+      <circle class="ship-core" cy="2" r="5.5"/>
+    </symbol>
+  </svg>
+
   <header class="topbar">
     <a class="brand" href="#inicio" aria-label="Início">
       <span class="brand-mark" aria-hidden="true">//</span>
@@ -39,6 +53,7 @@
     <nav class="nav" aria-label="Projetos">
       <a href="#brawl">Brawl<span class="long"> SENAI</span></a>
       <a href="#tron">TRON</a>
+      <a href="#orbital">Orbital<span class="long"> Heads</span></a>
       <a href="#rocket">Rocket<span class="long"> SENAI</span></a>
     </nav>
   </header>
@@ -54,7 +69,7 @@
               Feira de Ciências SENAI · 2026
             </p>
             <h1 id="hero-title" data-reveal style="--d: 80ms">7D Games</h1>
-            <p class="lead" data-reveal style="--d: 160ms">Sete integrantes e três projetos: dois jogos e uma corrida imersiva com um carrinho de controle remoto e câmera a bordo. Conheça a equipe e venha jogar e pilotar com a gente.</p>
+            <p class="lead" data-reveal style="--d: 160ms">Sete integrantes e quatro projetos: três jogos e uma corrida imersiva com um carrinho de controle remoto e câmera a bordo. Conheça a equipe e venha jogar e pilotar com a gente.</p>
             <a class="btn-race" href="#integrantes" data-reveal style="--d: 220ms">Conheça a equipe</a>
           </div>
 
@@ -78,8 +93,15 @@
                   </a>
                 </li>
                 <li>
-                  <a href="#rocket" data-show="rocket">
+                  <a href="#orbital" data-show="orbital">
                     <span class="st-no">03</span>
+                    <span class="st-name">Orbital Heads</span>
+                    <span class="st-meta"><span class="st-type">Jogo</span><span class="st-who">Yan</span></span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#rocket" data-show="rocket">
+                    <span class="st-no">04</span>
                     <span class="st-name">Rocket SENAI</span>
                     <span class="st-meta"><span class="st-type">Corrida imersiva</span><span class="st-who">Julio, Pedro e Vinícius</span></span>
                   </a>
@@ -181,7 +203,7 @@
               </div>
             </div>
           </li>
-          <li class="slot" data-project="banners" style="--d: 360ms">
+          <li class="slot" data-project="orbital banners" style="--d: 360ms">
             <div class="driver">
               <div class="driver-photo">
                 <span class="driver-big" aria-hidden="true">07</span>
@@ -190,7 +212,7 @@
               <div class="driver-info">
                 <p class="driver-code" aria-hidden="true"><b>07</b>YAN</p>
                 <h3 class="driver-name">Yan <span>Matheus Proença Camargo</span></h3>
-                <p class="driver-role"><span>Banners</span></p>
+                <p class="driver-role"><span>Orbital Heads</span><span>Banners</span></p>
               </div>
             </div>
           </li>
@@ -232,7 +254,16 @@
               <path class="arrow-line" pathLength="1" d="M130 52C104 64 64 60 18 30"/>
               <path class="arrow-head" pathLength="1" d="M25 47 18 30 36 29"/>
             </svg>
-            <span>Quer jogar? <strong>Procure esse mano!</strong></span>
+            <span>Quer jogar? <strong>Procure esse cara!</strong></span>
+          </p>
+          <!-- Repositório do Brawl SENAI: quando o Emannoel mandar o link, cole entre as aspas do href abaixo
+               (ex.: https://github.com/usuario/brawl-senai, com ou sem ".git"). O texto do botão se ajusta sozinho;
+               enquanto o href estiver vazio, aparece "Link em breve". -->
+          <p class="repo-row" data-reveal style="--d: 300ms">
+            <a class="repo" href="" target="_blank" rel="noopener">
+              <svg class="repo-icon" aria-hidden="true"><use href="#icon-github"/></svg>
+              <span class="repo-text"><span class="repo-label">Repositório no GitHub</span> <span class="repo-path">Link em breve</span></span>
+            </a>
           </p>
         </div>
       </div>
@@ -249,11 +280,17 @@
           <p class="project-index" data-reveal>Projeto 02</p>
           <h2 class="tron-title" id="tron-title" data-reveal="neon">TRON</h2>
           <p class="callout" data-reveal style="--d: 200ms">
-            <span>Quer jogar? <strong>Procure esse outro mano!</strong></span>
+            <span>Quer jogar? <strong>Procure esse outro cara!</strong></span>
             <svg class="arrow" viewBox="0 0 140 70" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path class="arrow-line" pathLength="1" d="M10 52C36 64 76 60 122 30"/>
               <path class="arrow-head" pathLength="1" d="M115 47 122 30 104 29"/>
             </svg>
+          </p>
+          <p class="repo-row" data-reveal style="--d: 300ms">
+            <a class="repo" href="https://github.com/John-Cristopher/tron" target="_blank" rel="noopener">
+              <svg class="repo-icon" aria-hidden="true"><use href="#icon-github"/></svg>
+              <span class="repo-text"><span class="repo-label">Repositório no GitHub</span> <span class="repo-path">John-Cristopher/tron</span></span>
+            </a>
           </p>
         </div>
 
@@ -268,7 +305,60 @@
       </div>
     </section>
 
-    <!-- ================= PROJETO 03: ROCKET SENAI (3D guiado pela rolagem, em js/rocket.js) ================= -->
+    <div class="divider" aria-hidden="true"><span>//</span></div>
+
+    <!-- ================= PROJETO 03: ORBITAL HEADS ================= -->
+    <section class="project orbital" id="orbital" aria-labelledby="orbital-title" data-live>
+      <!-- Cenário: estrelas, a frota alienígena descendo (uma nave na mira) e a Terra vista da órbita.
+           Cada nave: --x/--y = posição, --s = tamanho, --r = inclinação, --t = duração da descida. -->
+      <div class="orb-scene" aria-hidden="true">
+        <div class="orb-fleet">
+          <i class="orb-ship" style="--x: 16%; --y: 6%; --s: 0.45; --r: 14deg; --t: 23s"><svg><use href="#orb-ship"/></svg></i>
+          <i class="orb-ship" style="--x: 47%; --y: 13%; --s: 0.4; --r: -8deg; --t: 18s"><svg><use href="#orb-ship"/></svg></i>
+          <i class="orb-ship" style="--x: 60%; --y: 3%; --s: 0.55; --r: 6deg; --t: 19s"><svg><use href="#orb-ship"/></svg></i>
+          <i class="orb-ship is-locked" style="--x: 74%; --y: 9%; --s: 1; --r: -4deg; --t: 15s"><svg><use href="#orb-ship"/></svg><b class="orb-lock"></b></i>
+          <i class="orb-ship" style="--x: 87%; --y: 2%; --s: 0.7; --r: 10deg; --t: 17s"><svg><use href="#orb-ship"/></svg></i>
+          <i class="orb-ship" style="--x: 94%; --y: 21%; --s: 0.85; --r: -12deg; --t: 21s"><svg><use href="#orb-ship"/></svg></i>
+        </div>
+        <div class="orb-earth"></div>
+      </div>
+
+      <div class="project-inner">
+        <!-- Foto: img/equipe/yan-terno.webp. A linha da órbita e o satélite giram em volta dela. -->
+        <figure class="player" data-tilt data-reveal>
+          <div class="frame">
+            <img src="img/equipe/yan-terno.webp" alt="Foto de Yan Matheus Proença Camargo" width="804" height="1077" loading="lazy" onerror="this.closest('figure').classList.add('is-missing')">
+            <div class="photo-fallback" aria-hidden="true"><span>YC</span></div>
+            <span class="orb-tag" aria-hidden="true">Piloto 07</span>
+          </div>
+          <!-- Satélite: duas cópias sincronizadas, uma passa atrás da foto e a outra, na frente -->
+          <span class="orb-sat is-back" aria-hidden="true"><i><b></b></i></span>
+          <span class="orb-sat is-front" aria-hidden="true"><i><b></b></i></span>
+          <figcaption>Yan Matheus Proença Camargo</figcaption>
+        </figure>
+
+        <div class="project-copy">
+          <p class="project-index" data-reveal>Projeto 03</p>
+          <h2 class="orbital-title" id="orbital-title" data-reveal style="--d: 80ms">Orbital <span>Heads</span></h2>
+          <p class="orb-alert" data-reveal style="--d: 140ms"><b>Alerta</b> Frota alienígena a caminho da Terra</p>
+          <p class="callout" data-reveal style="--d: 200ms">
+            <svg class="arrow" viewBox="0 0 140 70" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path class="arrow-line" pathLength="1" d="M130 52C104 64 64 60 18 30"/>
+              <path class="arrow-head" pathLength="1" d="M25 47 18 30 36 29"/>
+            </svg>
+            <span>Quer defender a Terra? <strong>Procure esse cara!</strong></span>
+          </p>
+          <p class="repo-row" data-reveal style="--d: 300ms">
+            <a class="repo" href="https://github.com/Yan-Proenca/orbital-heads" target="_blank" rel="noopener">
+              <svg class="repo-icon" aria-hidden="true"><use href="#icon-github"/></svg>
+              <span class="repo-text"><span class="repo-label">Repositório no GitHub</span> <span class="repo-path">Yan-Proenca/orbital-heads</span></span>
+            </a>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= PROJETO 04: ROCKET SENAI (3D guiado pela rolagem, em js/rocket.js) ================= -->
     <section class="rocket" id="rocket" aria-labelledby="rocket-title" data-live>
       <a class="skip rk-skip" href="#rocket-equipe">Pular a animação 3D</a>
 
@@ -349,7 +439,7 @@
         <div class="rk-chapters">
           <article class="rk-chapter rk-intro">
             <div class="rk-card">
-              <p class="project-index" data-reveal>Projeto 03</p>
+              <p class="project-index" data-reveal>Projeto 04</p>
               <h2 class="rocket-title" id="rocket-title" data-reveal style="--d: 80ms">Rocket <span class="badge">SENAI</span></h2>
               <p class="rk-lead" data-reveal style="--d: 160ms">Uma corrida que você pilota pelos olhos do carro.</p>
               <p data-reveal style="--d: 220ms">Carrinhos controlados à distância, cada um com uma câmera <strong>ESP32-CAM</strong> em cima: é por ela que você enxerga a pista.</p>
